@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: sueda-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MONGO_URI
+        value: mongodb+srv://ammanrikz4_db_user:kL1DtoZH2QynbJve@cluster0.r9kxzmh.mongodb.net/sueda_db
+      - key: DB_NAME
+        value: sueda_db
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: SECRET_KEY
+        value: sueda_prod_secret_key_2026
