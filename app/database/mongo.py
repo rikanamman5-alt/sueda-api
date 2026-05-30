@@ -13,7 +13,7 @@ except AttributeError:
 client = AsyncIOMotorClient(
     MONGO_URI,
     tls=True,
-    tls_context=ctx,
+    ssl_context=ctx,
     serverSelectionTimeoutMS=30000,
 )
 db = client[DB_NAME]
