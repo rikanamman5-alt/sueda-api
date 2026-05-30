@@ -18,7 +18,10 @@ class ProductModel:
 
     @staticmethod
     async def get_by_id(product_id: str):
-        return await products_collection.find_one({"_id": ObjectId(product_id)})
+        result = await products_collection.find_one({"_id": ObjectId(product_id)})
+        if result is None:
+            result = await products_collection.find_one({"_id": product_id})
+        return result
 
     @staticmethod
     async def get_by_seller(seller_id: str):
@@ -71,11 +74,20 @@ class ProductModel:
 
     @staticmethod
     async def update(product_id: str, data: dict):
-        return await products_collection.update_one(
+        result = await products_collection.update_one(
             {"_id": ObjectId(product_id)},
             {"$set": data}
         )
+        if result.matched_count == 0:
+            result = await products_collection.update_one(
+                {"_id": product_id},
+                {"$set": data}
+            )
+        return result
 
     @staticmethod
     async def delete(product_id: str):
-        return await products_collection.delete_one({"_id": ObjectId(product_id)})
+        result = await products_collection.delete_one({"_id": ObjectId(product_id)})
+        if result.deleted_count == 0:
+            result = await products_collection.delete_one({"_id": product_id})
+        return result
