@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from jose import jwt, JWTError
+import jwt
 from passlib.context import CryptContext
 from core.config import SECRET_KEY, ALGORITHM, ACCESS_EXPIRE_MINUTES, REFRESH_EXPIRE_DAYS
 
@@ -40,5 +40,5 @@ def verify_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-    except JWTError:
+    except jwt.InvalidTokenError:
         return None

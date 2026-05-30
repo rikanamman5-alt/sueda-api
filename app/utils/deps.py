@@ -1,4 +1,4 @@
-from jose import jwt, JWTError
+import jwt
 from fastapi import HTTPException, Depends
 from fastapi.security import HTTPBearer
 from core.config import SECRET_KEY, ALGORITHM
@@ -14,7 +14,7 @@ def get_current_user(token=Depends(security)):
             raise HTTPException(status_code=401, detail="Invalid token type")
 
         return payload
-    except JWTError:
+    except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 

@@ -1,7 +1,9 @@
 import uuid
+import base64
 from datetime import datetime, timedelta
 from fastapi import APIRouter, HTTPException, Depends
-from jose import jwt, jwk, JWTError
+import jwt
+from cryptography.hazmat.primitives.asymmetric import rsa
 from utils.jwt import create_access_token, create_refresh_token, hash_password, verify_password
 from core.config import SECRET_KEY, ALGORITHM, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI, ADMIN_EMAIL, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM
 from database.collections import users_collection
@@ -13,6 +15,12 @@ from bson.objectid import ObjectId
 GOOGLE_JWKS_URL = "https://www.googleapis.com/oauth2/v3/certs"
 GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
 GOOGLE_ISSUER = "https://accounts.google.com"
+
+
+def _jwk_to_rsa_key(jwk_data: dict):
+    n = int.from_bytes(base64.urlsafe_b64decode(jwk_data["n"] + "=="), "big")
+    e = int.from_bytes(base64.urlsafe_b64decode(jwk_data["e"] + "=="), "big")
+    return rsa.RSAPublicNumbers(e, n).public_key()
 
 router = APIRouter(tags=["1. Auth"])
 
@@ -51,7 +59,7 @@ async def google_callback(code: str):
                         key_data = key
                         break
                 if key_data:
-                    rsa_key = jwk.construct(key_data)
+                    rsa_key = _jwk_to_rsa_key(key_data)
                     claims = jwt.decode(
                         id_token, rsa_key,
                         algorithms=["RS256"],
@@ -161,7 +169,7 @@ async def refresh_token(refresh_token: str):
             "token_type": "bearer"
         }
 
-    except JWTError:
+    except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
 
 
