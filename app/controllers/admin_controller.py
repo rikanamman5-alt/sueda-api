@@ -47,7 +47,11 @@ async def admin_dashboard(admin=Depends(require_role(["admin"]))):
     recent_orders = await orders_collection.find().sort("created_at", -1).limit(10).to_list(10)
     orders_list = []
     for o in recent_orders:
-        buyer = await users_collection.find_one({"_id": ObjectId(o["buyer_id"])}) if o.get("buyer_id") else None
+        buyer = None
+        if o.get("buyer_id"):
+            buyer = await users_collection.find_one({"_id": ObjectId(o["buyer_id"])})
+            if not buyer:
+                buyer = await users_collection.find_one({"_id": o["buyer_id"]})
         orders_list.append({
             "id": str(o["_id"]),
             "buyer_name": buyer.get("name", "Unknown") if buyer else "Unknown",
@@ -127,6 +131,8 @@ async def admin_get_user_detail(
 ):
     user = await users_collection.find_one({"_id": ObjectId(user_id)})
     if not user:
+        user = await users_collection.find_one({"_id": user_id})
+    if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
     result = {
@@ -198,6 +204,8 @@ async def admin_get_user_detail(
         for d in rider_deliveries:
             if d.get("status") == "delivered":
                 order = await orders_collection.find_one({"_id": ObjectId(d["order_id"])})
+                if not order:
+                    order = await orders_collection.find_one({"_id": d["order_id"]})
                 if order:
                     total_earnings += order.get("delivery_fee", 0) or 0
         result["total_deliveries"] = total_deliveries
@@ -326,7 +334,11 @@ async def admin_list_products(
     products = await products_collection.find().sort("created_at", -1).skip(skip).to_list(length=limit)
     result = []
     for p in products:
-        seller = await users_collection.find_one({"_id": ObjectId(p["seller_id"])}) if p.get("seller_id") else None
+        seller = None
+        if p.get("seller_id"):
+            seller = await users_collection.find_one({"_id": ObjectId(p["seller_id"])})
+            if not seller:
+                seller = await users_collection.find_one({"_id": p["seller_id"]})
         result.append({
             "id": str(p["_id"]),
             "name": p.get("name", ""),
@@ -378,7 +390,11 @@ async def admin_list_orders(
     orders = await orders_collection.find(query).sort("created_at", -1).skip(skip).to_list(length=limit)
     result = []
     for o in orders:
-        buyer = await users_collection.find_one({"_id": ObjectId(o["buyer_id"])}) if o.get("buyer_id") else None
+        buyer = None
+        if o.get("buyer_id"):
+            buyer = await users_collection.find_one({"_id": ObjectId(o["buyer_id"])})
+            if not buyer:
+                buyer = await users_collection.find_one({"_id": o["buyer_id"]})
         result.append({
             "id": str(o["_id"]),
             "buyer_name": buyer.get("name", "Unknown") if buyer else "Unknown",
