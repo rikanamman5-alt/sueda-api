@@ -247,11 +247,13 @@ async def admin_approve_verification(
 ):
     user = await users_collection.find_one({"_id": ObjectId(user_id)})
     if not user:
+        user = await users_collection.find_one({"_id": user_id})
+    if not user:
         raise HTTPException(status_code=404, detail="User not found")
     if user.get("verification_status") != "pending":
         raise HTTPException(status_code=400, detail="User has no pending verification")
     await users_collection.update_one(
-        {"_id": ObjectId(user_id)},
+        {"_id": user["_id"]},
         {"$set": {"verification_status": "verified", "verification_reject_reason": ""}},
     )
     return {"verification_status": "verified", "message": "User verified successfully"}
@@ -266,11 +268,13 @@ async def admin_reject_verification(
     reason = data.get("reason", "")
     user = await users_collection.find_one({"_id": ObjectId(user_id)})
     if not user:
+        user = await users_collection.find_one({"_id": user_id})
+    if not user:
         raise HTTPException(status_code=404, detail="User not found")
     if user.get("verification_status") != "pending":
         raise HTTPException(status_code=400, detail="User has no pending verification")
     await users_collection.update_one(
-        {"_id": ObjectId(user_id)},
+        {"_id": user["_id"]},
         {"$set": {"verification_status": "rejected", "verification_reject_reason": reason}},
     )
     return {"verification_status": "rejected", "message": "User verification rejected"}
@@ -280,9 +284,11 @@ async def admin_reject_verification(
 async def admin_toggle_ban(user_id: str, admin=Depends(require_role(["admin"]))):
     user = await users_collection.find_one({"_id": ObjectId(user_id)})
     if not user:
+        user = await users_collection.find_one({"_id": user_id})
+    if not user:
         raise HTTPException(status_code=404, detail="User not found")
     new_status = not user.get("banned", False)
-    await users_collection.update_one({"_id": ObjectId(user_id)}, {"$set": {"banned": new_status}})
+    await users_collection.update_one({"_id": user["_id"]}, {"$set": {"banned": new_status}})
     return {"banned": new_status}
 
 
@@ -292,14 +298,18 @@ async def admin_change_role(user_id: str, data: RoleUpdate, admin=Depends(requir
         raise HTTPException(status_code=400, detail="Invalid role")
     user = await users_collection.find_one({"_id": ObjectId(user_id)})
     if not user:
+        user = await users_collection.find_one({"_id": user_id})
+    if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    await users_collection.update_one({"_id": ObjectId(user_id)}, {"$set": {"role": data.role}})
+    await users_collection.update_one({"_id": user["_id"]}, {"$set": {"role": data.role}})
     return {"role": data.role}
 
 
 @router.delete("/users/{user_id}")
 async def admin_delete_user(user_id: str, admin=Depends(require_role(["admin"]))):
     result = await users_collection.delete_one({"_id": ObjectId(user_id)})
+    if result.deleted_count == 0:
+        result = await users_collection.delete_one({"_id": user_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="User not found")
     return {"message": "User deleted"}
