@@ -5,10 +5,14 @@ services:
     dockerfilePath: ./Dockerfile
     envVars:
       - key: MONGO_URI
-        value: mongodb+srv://ammanrikz4_db_user:kL1DtoZH2QynbJve@cluster0.r9kxzmh.mongodb.net/sueda_db
+        sync: false
       - key: DB_NAME
-        value: sueda_db
+        sync: false
       - key: CORS_ORIGINS
-        value: "*"
+        sync: false
       - key: SECRET_KEY
-        value: sueda_prod_secret_key_2026
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
