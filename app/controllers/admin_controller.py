@@ -341,7 +341,7 @@ async def admin_delete_product(product_id: str, admin=Depends(require_role(["adm
     return {"message": "Product deleted"}
 
 
-@router.put("/products/{product_id}")
+@router.patch("/products/{product_id}")
 async def admin_update_product(product_id: str, data: ProductUpdateData, admin=Depends(require_role(["admin"]))):
     product = await ProductModel.get_by_id(product_id)
     if not product:

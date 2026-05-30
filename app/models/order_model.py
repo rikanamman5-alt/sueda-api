@@ -21,7 +21,10 @@ class OrderModel:
 
     @staticmethod
     async def get_by_id(order_id: str):
-        return await orders_collection.find_one({"_id": ObjectId(order_id)})
+        result = await orders_collection.find_one({"_id": ObjectId(order_id)})
+        if result is None:
+            result = await orders_collection.find_one({"_id": order_id})
+        return result
 
     @staticmethod
     async def update_status(order_id: str, status: str):
@@ -53,4 +56,7 @@ class OrderModel:
 
     @staticmethod
     async def delete(order_id: str):
-        return await orders_collection.delete_one({"_id": ObjectId(order_id)})
+        result = await orders_collection.delete_one({"_id": ObjectId(order_id)})
+        if result.deleted_count == 0:
+            result = await orders_collection.delete_one({"_id": order_id})
+        return result

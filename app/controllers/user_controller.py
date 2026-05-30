@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
+from bson.objectid import ObjectId
 from models.user_model import UserModel
 from models.product_model import ProductModel
 from schemas.user_schema import UserCreate, UserUpdate
@@ -247,3 +248,75 @@ async def update_notification_settings(
     _require_same_user(email, current_user)
     await UserModel.update_user(email, {"notification_settings": data})
     return {"message": "Notification settings updated"}
+
+
+class PaymentMethodCreate(BaseModel):
+    type: str
+    label: str
+    details: str
+
+
+@router.get("/users/{email}/payment-methods")
+async def get_payment_methods(email: str, current_user=Depends(get_current_user)):
+    _require_same_user(email, current_user)
+    user = await UserModel.get_user(email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"payment_methods": user.get("payment_methods", [])}
+
+
+@router.post("/users/{email}/payment-methods")
+async def add_payment_method(
+    email: str,
+    data: PaymentMethodCreate,
+    current_user=Depends(get_current_user),
+):
+    _require_same_user(email, current_user)
+    user = await UserModel.get_user(email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    methods = user.get("payment_methods", [])
+    new_method = {
+        "_id": str(ObjectId()),
+        "type": data.type,
+        "label": data.label,
+        "details": data.details,
+    }
+    methods.append(new_method)
+    await users_collection.update_one({"email": email}, {"$set": {"payment_methods": methods}})
+    return {"message": "Payment method added", "payment_method": new_method}
+
+
+@router.put("/users/payment-method/{method_id}")
+async def update_payment_method(
+    method_id: str,
+    data: PaymentMethodCreate,
+    current_user=Depends(get_current_user),
+):
+    email = current_user.get("sub") or current_user.get("email")
+    user = await UserModel.get_user(email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    methods = user.get("payment_methods", [])
+    for m in methods:
+        if str(m.get("_id") or m.get("id")) == method_id:
+            m["type"] = data.type
+            m["label"] = data.label
+            m["details"] = data.details
+            break
+    else:
+        raise HTTPException(status_code=404, detail="Payment method not found")
+    await users_collection.update_one({"email": email}, {"$set": {"payment_methods": methods}})
+    return {"message": "Payment method updated"}
+
+
+@router.delete("/users/payment-method/{method_id}")
+async def delete_payment_method(method_id: str, current_user=Depends(get_current_user)):
+    email = current_user.get("sub") or current_user.get("email")
+    user = await UserModel.get_user(email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    methods = user.get("payment_methods", [])
+    methods = [m for m in methods if str(m.get("_id") or m.get("id")) != method_id]
+    await users_collection.update_one({"email": email}, {"$set": {"payment_methods": methods}})
+    return {"message": "Payment method deleted"}
