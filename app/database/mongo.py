@@ -8,10 +8,11 @@ def _patched_create_default_context(*args, **kwargs):
     try:
         ctx.minimum_version = ssl.TLSVersion.TLSv1_2
         ctx.maximum_version = ssl.TLSVersion.TLSv1_2
-    except AttributeError:
+        ctx.set_ciphers('DEFAULT:@SECLEVEL=1')
+    except (AttributeError, ssl.SSLError):
         pass
     return ctx
 ssl.create_default_context = _patched_create_default_context
 
-client = AsyncIOMotorClient(MONGO_URI)
+client = AsyncIOMotorClient(MONGO_URI, tls=True, tlsAllowInvalidCertificates=True, tlsAllowInvalidHostnames=True)
 db = client[DB_NAME]
