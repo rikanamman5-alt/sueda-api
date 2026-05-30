@@ -10,5 +10,5 @@ try:
     tls_ctx.maximum_version = ssl.TLSVersion.TLSv1_2
 except AttributeError:
     pass
-client = AsyncIOMotorClient(MONGO_URI, ssl_context=tls_ctx, tls=True)
+client = AsyncIOMotorClient(MONGO_URI, tls_context=tls_ctx, tls=True)
 db = client[DB_NAME]
