@@ -45,7 +45,7 @@ async def _require_verified_seller(email: str):
 
 @router.get("/seller/profile")
 async def get_seller_profile(seller=Depends(require_role(["seller"]))):
-    email = seller.get("sub") or seller.get("email")
+    email = seller.get("email") or seller.get("user_id")
     user = await UserModel.get_user(email)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -74,7 +74,7 @@ async def update_seller_profile(
     data: SellerProfileUpdate,
     seller=Depends(require_role(["seller"])),
 ):
-    email = seller.get("sub") or seller.get("email")
+    email = seller.get("email") or seller.get("user_id")
     await _require_verified_seller(email)
     update_data = data.model_dump(exclude_none=True)
     if not update_data:
@@ -85,7 +85,7 @@ async def update_seller_profile(
 
 @router.get("/seller/products")
 async def get_seller_products(seller=Depends(require_role(["seller"]))):
-    seller_id = seller.get("user_id")
+    seller_id = seller.get("user_id") or seller.get("email")
     products = await ProductModel.get_by_seller(seller_id)
     result = []
     for p in products:
@@ -107,10 +107,11 @@ async def create_seller_product(
     data: ProductCreate,
     seller=Depends(require_role(["seller"])),
 ):
-    email = seller.get("sub") or seller.get("email")
+    email = seller.get("email") or seller.get("user_id")
     await _require_verified_seller(email)
     product = data.model_dump()
-    product["seller_id"] = seller["user_id"]
+    seller_id = seller.get("user_id") or seller.get("email")
+    product["seller_id"] = seller_id
     product["created_at"] = datetime.utcnow()
     result = await ProductModel.create(product)
     product["_id"] = str(result.inserted_id)
@@ -132,12 +133,19 @@ async def update_seller_product(
     data: ProductUpdate,
     seller=Depends(require_role(["seller"])),
 ):
-    email = seller.get("sub") or seller.get("email")
+    email = seller.get("email") or seller.get("user_id")
     await _require_verified_seller(email)
     product = await ProductModel.get_by_id(product_id)
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
-    if str(product.get("seller_id")) != seller["user_id"]:
+    seller_id = seller.get("user_id") or seller.get("email")
+    is_valid_seller = str(product.get("seller_id")) == seller_id
+    if not is_valid_seller and len(str(seller_id)) == 24:
+        try:
+            is_valid_seller = str(product.get("seller_id")) == str(ObjectId(seller_id))
+        except:
+            pass
+    if not is_valid_seller:
         raise HTTPException(status_code=403, detail="Not your product")
     update_data = data.model_dump(exclude_none=True)
     if not update_data:
@@ -154,7 +162,14 @@ async def delete_seller_product(
     product = await ProductModel.get_by_id(product_id)
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
-    if str(product.get("seller_id")) != seller["user_id"]:
+    seller_id = seller.get("user_id") or seller.get("email")
+    is_valid_seller = str(product.get("seller_id")) == seller_id
+    if not is_valid_seller and len(str(seller_id)) == 24:
+        try:
+            is_valid_seller = str(product.get("seller_id")) == str(ObjectId(seller_id))
+        except:
+            pass
+    if not is_valid_seller:
         raise HTTPException(status_code=403, detail="Not your product")
     await ProductModel.delete(product_id)
     return {"message": "Product deleted"}
@@ -162,9 +177,9 @@ async def delete_seller_product(
 
 @router.get("/seller/dashboard")
 async def get_seller_dashboard(seller=Depends(require_role(["seller"]))):
-    seller_id = seller.get("user_id")
+    seller_id = seller.get("user_id") or seller.get("email")
     products = await ProductModel.get_by_seller(seller_id)
-    seller_email = seller.get("sub") or seller.get("email")
+    seller_email = seller.get("email")
     user = await UserModel.get_user(seller_email)
 
     riders = await users_collection.find({
@@ -173,7 +188,16 @@ async def get_seller_dashboard(seller=Depends(require_role(["seller"]))):
     }).to_list(100)
     available_riders = [r for r in riders if r.get("is_available")]
 
-    orders = await orders_collection.find({"seller_id": seller_id}).to_list(500)
+    seller_id_obj = None
+    try:
+        if len(str(seller_id)) == 24:
+            seller_id_obj = ObjectId(seller_id)
+    except:
+        pass
+    query = {"seller_id": seller_id}
+    if seller_id_obj:
+        query = {"$or": [{"seller_id": seller_id}, {"seller_id": seller_id_obj}]}
+    orders = await orders_collection.find(query).to_list(500)
     total_orders = len(orders)
     pending_orders = len([o for o in orders if o.get("status") == "pending"])
     processing_orders = len([o for o in orders if o.get("status") == "processing"])
@@ -255,7 +279,7 @@ async def submit_seller_verification(
     data: SellerVerificationRequest,
     seller=Depends(require_role(["seller"])),
 ):
-    email = seller.get("sub") or seller.get("email")
+    email = seller.get("email") or seller.get("user_id")
     update = {
         "business_permit": data.business_permit,
         "operating_hours": data.operating_hours,
@@ -270,8 +294,17 @@ async def submit_seller_verification(
 
 @router.get("/seller/orders")
 async def get_seller_orders(seller=Depends(require_role(["seller"]))):
-    seller_id = seller.get("user_id")
-    orders = await orders_collection.find({"seller_id": seller_id}).sort("created_at", -1).to_list(200)
+    seller_id = seller.get("user_id") or seller.get("email")
+    seller_id_obj = None
+    try:
+        if len(str(seller_id)) == 24:
+            seller_id_obj = ObjectId(seller_id)
+    except:
+        pass
+    query = {"seller_id": seller_id}
+    if seller_id_obj:
+        query = {"$or": [{"seller_id": seller_id}, {"seller_id": seller_id_obj}]}
+    orders = await orders_collection.find(query).sort("created_at", -1).to_list(200)
     result = []
     for o in orders:
         buyer = None
@@ -346,7 +379,14 @@ async def update_seller_order_payment(
     order = await OrderModel.get_by_id(order_id)
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
-    if str(order.get("seller_id")) != seller["user_id"]:
+    seller_id = seller.get("user_id") or seller.get("email")
+    is_valid_seller = str(order.get("seller_id")) == seller_id
+    if not is_valid_seller and len(str(seller_id)) == 24:
+        try:
+            is_valid_seller = str(order.get("seller_id")) == str(ObjectId(seller_id))
+        except:
+            pass
+    if not is_valid_seller:
         raise HTTPException(status_code=403, detail="Not your order")
 
     await OrderModel.update_payment_status(order_id, data.payment_status)
@@ -368,7 +408,14 @@ async def update_seller_order_status(
     order = await OrderModel.get_by_id(order_id)
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
-    if str(order.get("seller_id")) != seller["user_id"]:
+    seller_id = seller.get("user_id") or seller.get("email")
+    is_valid_seller = str(order.get("seller_id")) == seller_id
+    if not is_valid_seller and len(str(seller_id)) == 24:
+        try:
+            is_valid_seller = str(order.get("seller_id")) == str(ObjectId(seller_id))
+        except:
+            pass
+    if not is_valid_seller:
         raise HTTPException(status_code=403, detail="Not your order")
 
     await OrderModel.update_status(order_id, data.status)
@@ -384,7 +431,7 @@ async def register_seller_rider(
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
 
-    seller_id = seller.get("user_id")
+    seller_id = seller.get("user_id") or seller.get("email")
     hashed = hash_password(data.password)
     new_rider = {
         "email": data.email,
@@ -404,8 +451,9 @@ async def register_seller_rider(
 
 @router.get("/seller/riders")
 async def get_seller_riders(seller=Depends(require_role(["seller"]))):
+    seller_id = seller.get("user_id") or seller.get("email")
     riders = await users_collection.find(
-        {"role": "rider"},
+        {"role": "rider", "seller_id": seller_id},
         {"password_hash": 0, "refresh_token": 0},
     ).to_list(200)
     active_statuses = {"assigned", "accepted", "picked_up", "in_transit"}
@@ -435,7 +483,7 @@ async def delete_seller_rider(
     email: str,
     seller=Depends(require_role(["seller"])),
 ):
-    seller_id = seller.get("user_id")
+    seller_id = seller.get("user_id") or seller.get("email")
     rider = await users_collection.find_one({"email": email, "seller_id": seller_id})
     if not rider:
         raise HTTPException(status_code=404, detail="Rider not found")

@@ -36,7 +36,7 @@ async def update_rider_location(
     location: dict,
     rider=Depends(require_role(["rider"])),
 ):
-    email = rider.get("sub") or rider.get("email")
+    email = rider.get("email") or rider.get("user_id")
     await _require_verified_rider(email)
     await users_collection.update_one(
         {"email": email},
@@ -47,7 +47,7 @@ async def update_rider_location(
 
 @router.get("/rider/deliveries")
 async def get_rider_deliveries(rider=Depends(require_role(["rider"]))):
-    email = rider.get("sub") or rider.get("email")
+    email = rider.get("email") or rider.get("user_id")
     await _require_verified_rider(email)
     rider_id = rider.get("user_id")
     deliveries = await DeliveryModel.get_by_rider(rider_id)
@@ -115,7 +115,7 @@ async def submit_rider_verification(
     data: RiderVerificationRequest,
     rider=Depends(require_role(["rider"])),
 ):
-    email = rider.get("sub") or rider.get("email")
+    email = rider.get("email") or rider.get("user_id")
     update = {
         "vehicle_brand": data.vehicle_brand,
         "vehicle_model": data.vehicle_model,
@@ -136,7 +136,7 @@ async def update_delivery_status(
     status: str = Body(..., embed=True),
     rider=Depends(require_role(["rider"])),
 ):
-    email = rider.get("sub") or rider.get("email")
+    email = rider.get("email") or rider.get("user_id")
     await _require_verified_rider(email)
     from services.delivery_service import DeliveryService
     try:
@@ -166,7 +166,7 @@ async def accept_delivery(
     order_id: str,
     rider=Depends(require_role(["rider"])),
 ):
-    email = rider.get("sub") or rider.get("email")
+    email = rider.get("email") or rider.get("user_id")
     await _require_verified_rider(email)
     rider_id = rider.get("user_id")
     from services.delivery_service import DeliveryService

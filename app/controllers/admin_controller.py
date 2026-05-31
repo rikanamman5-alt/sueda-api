@@ -166,7 +166,12 @@ async def admin_get_user_detail(
         result["verification_reject_reason"] = user.get("verification_reject_reason", "")
 
         product_count = await products_collection.count_documents({"seller_id": user_id})
-        seller_orders = await orders_collection.find({"seller_id": user_id}).to_list(200)
+        seller_orders = await orders_collection.find({
+            "$or": [
+                {"seller_id": user_id},
+                {"seller_id": ObjectId(user_id)}
+            ]
+        }).to_list(200)
         total_orders = len(seller_orders)
         total_revenue = sum(o.get("total_price", 0) or 0 for o in seller_orders if o.get("status") == "delivered")
         result["product_count"] = product_count
@@ -175,7 +180,12 @@ async def admin_get_user_detail(
 
     # Buyer-specific details
     elif role == "buyer":
-        buyer_orders = await orders_collection.find({"buyer_id": user_id}).to_list(200)
+        buyer_orders = await orders_collection.find({
+            "$or": [
+                {"buyer_id": user_id},
+                {"buyer_id": ObjectId(user_id)}
+            ]
+        }).to_list(200)
         total_orders = len(buyer_orders)
         total_spent = sum(o.get("total_price", 0) or 0 for o in buyer_orders)
         result["total_orders"] = total_orders
@@ -196,7 +206,12 @@ async def admin_get_user_detail(
         result["verification_reject_reason"] = user.get("verification_reject_reason", "")
         result["verification_doc"] = user.get("verification_doc", "")
 
-        rider_deliveries = await deliveries_collection.find({"rider_id": user_id}).to_list(200)
+        rider_deliveries = await deliveries_collection.find({
+            "$or": [
+                {"rider_id": user_id},
+                {"rider_id": ObjectId(user_id)}
+            ]
+        }).to_list(200)
         total_deliveries = len(rider_deliveries)
         completed_count = sum(1 for d in rider_deliveries if d.get("status") == "delivered")
         # Earnings from completed order delivery_fees

@@ -440,7 +440,7 @@ async def login(data: LoginRequest):
 
 @router.get("/protected")
 async def protected_route(user=Depends(get_current_user)):
-    email = user.get("sub") or user.get("email")
+    email = user.get("email") or user.get("user_id")
     db_user = await users_collection.find_one({"email": email}, {"_id": 0, "password_hash": 0, "refresh_token": 0})
     if db_user:
         if db_user.get("avatar"):

@@ -28,7 +28,7 @@ class ChangePasswordRequest(BaseModel):
 
 
 def _require_same_user(email: str, current_user: dict):
-    token_email = current_user.get("sub") or current_user.get("email")
+    token_email = current_user.get("email") or current_user.get("user_id")
     if token_email != email:
         raise HTTPException(status_code=403, detail="Cannot access another user")
 
@@ -75,7 +75,7 @@ async def update_user(
     data: UserUpdate,
     current_user=Depends(get_current_user),
 ):
-    token_email = current_user.get("sub") or current_user.get("email")
+    token_email = current_user.get("email") or current_user.get("user_id")
     if token_email != email:
         raise HTTPException(status_code=403, detail="Cannot update another user")
 
@@ -96,7 +96,7 @@ async def update_account_settings(
     data: AccountSettingsUpdate,
     current_user=Depends(get_current_user),
 ):
-    current_email = current_user.get("sub") or current_user.get("email")
+    current_email = current_user.get("email") or current_user.get("user_id")
     user = await users_collection.find_one({"email": current_email})
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -168,7 +168,7 @@ async def delete_user(
     email: str,
     current_user=Depends(get_current_user),
 ):
-    token_email = current_user.get("sub") or current_user.get("email")
+    token_email = current_user.get("email") or current_user.get("user_id")
     if token_email != email:
         raise HTTPException(status_code=403, detail="Cannot delete another user")
 
@@ -201,7 +201,7 @@ async def get_wishlist(email: str, current_user=Depends(get_current_user)):
 
 @router.post("/users/wishlist/{product_id}")
 async def add_to_wishlist(product_id: str, current_user=Depends(get_current_user)):
-    email = current_user.get("sub") or current_user.get("email")
+    email = current_user.get("email") or current_user.get("user_id")
     product = await ProductModel.get_by_id(product_id)
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -212,7 +212,7 @@ async def add_to_wishlist(product_id: str, current_user=Depends(get_current_user
 
 @router.delete("/users/wishlist/{product_id}")
 async def remove_from_wishlist(product_id: str, current_user=Depends(get_current_user)):
-    email = current_user.get("sub") or current_user.get("email")
+    email = current_user.get("email") or current_user.get("user_id")
     await UserModel.remove_from_wishlist(email, product_id)
     return {"message": "Removed from wishlist"}
 
@@ -232,7 +232,7 @@ async def mark_notification_read(
     data: dict,
     current_user=Depends(get_current_user),
 ):
-    email = current_user.get("sub") or current_user.get("email")
+    email = current_user.get("email") or current_user.get("user_id")
     user = await UserModel.get_user(email)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -299,7 +299,7 @@ async def update_payment_method(
     data: PaymentMethodCreate,
     current_user=Depends(get_current_user),
 ):
-    email = current_user.get("sub") or current_user.get("email")
+    email = current_user.get("email") or current_user.get("user_id")
     user = await UserModel.get_user(email)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -318,7 +318,7 @@ async def update_payment_method(
 
 @router.delete("/users/payment-method/{method_id}")
 async def delete_payment_method(method_id: str, current_user=Depends(get_current_user)):
-    email = current_user.get("sub") or current_user.get("email")
+    email = current_user.get("email") or current_user.get("user_id")
     user = await UserModel.get_user(email)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -333,7 +333,7 @@ async def change_password(
     data: ChangePasswordRequest,
     current_user=Depends(get_current_user),
 ):
-    email = current_user.get("sub") or current_user.get("email")
+    email = current_user.get("email") or current_user.get("user_id")
     user = await UserModel.get_user(email)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -388,7 +388,7 @@ async def update_address(
     data: dict,
     current_user=Depends(get_current_user),
 ):
-    email = current_user.get("sub") or current_user.get("email")
+    email = current_user.get("email") or current_user.get("user_id")
     user = await UserModel.get_user(email)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -409,7 +409,7 @@ async def update_address(
 
 @router.delete("/users/address/{address_id}")
 async def delete_address(address_id: str, current_user=Depends(get_current_user)):
-    email = current_user.get("sub") or current_user.get("email")
+    email = current_user.get("email") or current_user.get("user_id")
     user = await UserModel.get_user(email)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
