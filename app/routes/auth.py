@@ -241,10 +241,15 @@ async def google_mobile_auth(data: GoogleMobileAuth):
         "role": role,
     })
 
-    await users_collection.update_one(
+    update_result = await users_collection.update_one(
         {"_id": ObjectId(user_id)},
         {"$set": {"refresh_token": refresh_token}},
     )
+    if update_result.matched_count == 0:
+        await users_collection.update_one(
+            {"_id": user_id},
+            {"$set": {"refresh_token": refresh_token}},
+        )
 
     return {
         "access_token": access_token,
