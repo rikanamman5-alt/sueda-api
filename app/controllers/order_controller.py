@@ -17,6 +17,8 @@ async def _enrich_orders(orders: list) -> list:
         if rider_id:
             try:
                 rider = await users_collection.find_one({"_id": ObjectId(rider_id)})
+                if not rider:
+                    rider = await users_collection.find_one({"_id": rider_id})
                 if rider:
                     enriched["rider"] = {
                         "name": rider.get("name", ""),

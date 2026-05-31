@@ -197,7 +197,11 @@ async def get_seller_dashboard(seller=Depends(require_role(["seller"]))):
     recent = sorted(orders, key=lambda o: o.get("created_at", datetime.min), reverse=True)[:10]
     recent_orders = []
     for o in recent:
-        buyer = await users_collection.find_one({"_id": ObjectId(o["buyer_id"])}) if o.get("buyer_id") else None
+        buyer = None
+        if o.get("buyer_id"):
+            buyer = await users_collection.find_one({"_id": ObjectId(o["buyer_id"])})
+            if not buyer:
+                buyer = await users_collection.find_one({"_id": o["buyer_id"]})
         recent_orders.append({
             "id": str(o["_id"]),
             "buyer_name": buyer.get("name", "Unknown") if buyer else "Unknown",
@@ -257,7 +261,11 @@ async def get_seller_orders(seller=Depends(require_role(["seller"]))):
     orders = await orders_collection.find({"seller_id": seller_id}).sort("created_at", -1).to_list(200)
     result = []
     for o in orders:
-        buyer = await users_collection.find_one({"_id": ObjectId(o["buyer_id"])}) if o.get("buyer_id") else None
+        buyer = None
+        if o.get("buyer_id"):
+            buyer = await users_collection.find_one({"_id": ObjectId(o["buyer_id"])})
+            if not buyer:
+                buyer = await users_collection.find_one({"_id": o["buyer_id"]})
 
         items = []
         for item in o.get("items", []):
@@ -275,6 +283,8 @@ async def get_seller_orders(seller=Depends(require_role(["seller"]))):
         if rider_id:
             try:
                 rider = await users_collection.find_one({"_id": ObjectId(rider_id)})
+                if not rider:
+                    rider = await users_collection.find_one({"_id": rider_id})
                 if rider:
                     rider_name = rider.get("name", "")
             except Exception:

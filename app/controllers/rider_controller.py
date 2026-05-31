@@ -60,14 +60,20 @@ async def get_rider_deliveries(rider=Depends(require_role(["rider"]))):
             seller_id = order.get("seller_id")
             if seller_id:
                 seller = await users_collection.find_one({"_id": ObjectId(seller_id) if isinstance(seller_id, str) else seller_id})
+                if not seller:
+                    seller = await users_collection.find_one({"_id": seller_id})
             buyer = None
             buyer_id = order.get("buyer_id")
             if buyer_id:
                 buyer = await users_collection.find_one({"_id": ObjectId(buyer_id) if isinstance(buyer_id, str) else buyer_id})
+                if not buyer:
+                    buyer = await users_collection.find_one({"_id": buyer_id})
             assigned_rider = None
             rider_id = d.get("rider_id")
             if rider_id:
                 assigned_rider = await users_collection.find_one({"_id": ObjectId(rider_id) if isinstance(rider_id, str) else rider_id})
+                if not assigned_rider:
+                    assigned_rider = await users_collection.find_one({"_id": rider_id})
             result.append({
                 "delivery": fix_mongo(d),
                 "order": fix_mongo(order),

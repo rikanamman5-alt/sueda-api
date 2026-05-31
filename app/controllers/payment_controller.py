@@ -14,9 +14,16 @@ class PaymentConfirmRequest(BaseModel):
     order_id: str
 
 
+async def _find_order(order_id: str):
+    order = await orders_collection.find_one({"_id": ObjectId(order_id)})
+    if not order:
+        order = await orders_collection.find_one({"_id": order_id})
+    return order
+
+
 @router.post("/api/payments/gcash", dependencies=[Depends(get_current_user)])
 async def gcash_payment(data: PaymentConfirmRequest):
-    order = await orders_collection.find_one({"_id": ObjectId(data.order_id)})
+    order = await _find_order(data.order_id)
     seller_id = order.get("seller_id") if order else None
     seller = await users_collection.find_one({"email": seller_id}) if seller_id else None
     return {
@@ -27,7 +34,7 @@ async def gcash_payment(data: PaymentConfirmRequest):
 
 @router.post("/api/payments/credit-card", dependencies=[Depends(get_current_user)])
 async def credit_card_payment(data: PaymentConfirmRequest):
-    order = await orders_collection.find_one({"_id": ObjectId(data.order_id)})
+    order = await _find_order(data.order_id)
     seller_id = order.get("seller_id") if order else None
     seller = await users_collection.find_one({"email": seller_id}) if seller_id else None
     return {

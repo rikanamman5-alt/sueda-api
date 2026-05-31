@@ -67,6 +67,8 @@ class RatingModel:
         result = []
         for r in ratings:
             product = await products_collection.find_one({"_id": ObjectId(r["product_id"])})
+            if not product:
+                product = await products_collection.find_one({"_id": r["product_id"]})
             result.append({
                 "product_id": r["product_id"],
                 "product_name": product.get("name", "Product") if product else "Product",
@@ -97,6 +99,8 @@ class RatingModel:
         result = []
         for pid in unrated:
             product = await products_collection.find_one({"_id": ObjectId(pid)})
+            if not product:
+                product = await products_collection.find_one({"_id": pid})
             if product:
                 result.append({
                     "product_id": pid,
@@ -109,7 +113,12 @@ class RatingModel:
     @staticmethod
     async def _update_product_avg(product_id: str):
         avg, count = await RatingModel.get_product_ratings(product_id)
-        await products_collection.update_one(
+        update_result = await products_collection.update_one(
             {"_id": ObjectId(product_id)},
             {"$set": {"avgRating": avg, "numRatings": count}}
         )
+        if update_result.matched_count == 0:
+            await products_collection.update_one(
+                {"_id": product_id},
+                {"$set": {"avgRating": avg, "numRatings": count}}
+            )

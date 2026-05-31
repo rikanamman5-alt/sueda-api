@@ -111,10 +111,15 @@ async def google_callback(code: str):
         "role": role
     })
 
-    await users_collection.update_one(
+    update_result = await users_collection.update_one(
         {"_id": ObjectId(user_id)},
-        {"$set": {"refresh_token": refresh_token}}
+        {"$set": {"refresh_token": refresh_token}},
     )
+    if update_result.matched_count == 0:
+        await users_collection.update_one(
+            {"_id": user_id},
+            {"$set": {"refresh_token": refresh_token}},
+        )
 
     return {
         "access_token": access_token,
@@ -140,6 +145,8 @@ async def refresh_token(refresh_token: str):
         email = payload["email"]
 
         user = await users_collection.find_one({"_id": ObjectId(user_id)})
+        if not user:
+            user = await users_collection.find_one({"_id": user_id})
 
         if not user or user.get("refresh_token") != refresh_token:
             raise HTTPException(status_code=401, detail="Invalid refresh token")
@@ -158,10 +165,15 @@ async def refresh_token(refresh_token: str):
             "role": role
         })
 
-        await users_collection.update_one(
+        update_result = await users_collection.update_one(
             {"_id": ObjectId(user_id)},
             {"$set": {"refresh_token": new_refresh_token}}
         )
+        if update_result.matched_count == 0:
+            await users_collection.update_one(
+                {"_id": user_id},
+                {"$set": {"refresh_token": new_refresh_token}}
+            )
 
         return {
             "access_token": new_access_token,
@@ -304,10 +316,15 @@ async def register(data: RegisterRequest):
         "user_id": user_id, "email": data.email, "role": role,
     })
 
-    await users_collection.update_one(
+    update_result = await users_collection.update_one(
         {"_id": ObjectId(user_id)},
         {"$set": {"refresh_token": refresh_token}},
     )
+    if update_result.matched_count == 0:
+        await users_collection.update_one(
+            {"_id": user_id},
+            {"$set": {"refresh_token": refresh_token}},
+        )
 
     return {
         "access_token": access_token,
@@ -359,10 +376,15 @@ async def register_rider(data: RegisterRequest):
         "user_id": user_id, "email": data.email, "role": role,
     })
 
-    await users_collection.update_one(
+    update_result = await users_collection.update_one(
         {"_id": ObjectId(user_id)},
         {"$set": {"refresh_token": refresh_token}},
     )
+    if update_result.matched_count == 0:
+        await users_collection.update_one(
+            {"_id": user_id},
+            {"$set": {"refresh_token": refresh_token}},
+        )
 
     return {
         "access_token": access_token,
@@ -393,10 +415,15 @@ async def login(data: LoginRequest):
         "user_id": user_id, "email": data.email, "role": role,
     })
 
-    await users_collection.update_one(
+    update_result = await users_collection.update_one(
         {"_id": ObjectId(user_id)},
         {"$set": {"refresh_token": refresh_token}},
     )
+    if update_result.matched_count == 0:
+        await users_collection.update_one(
+            {"_id": user_id},
+            {"$set": {"refresh_token": refresh_token}},
+        )
 
     return {
         "access_token": access_token,
@@ -427,7 +454,7 @@ async def get_me(user=Depends(get_current_user)):
     if db_user:
         db_user["_id"] = str(db_user["_id"])
         return db_user
-    return user
+    return {"_id": user.get("user_id", ""), "email": user.get("email", ""), "role": user.get("role", "")}
 
 
 class UpdateRoleRequest(BaseModel):
