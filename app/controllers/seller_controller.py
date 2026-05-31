@@ -113,7 +113,17 @@ async def create_seller_product(
     product["seller_id"] = seller["user_id"]
     product["created_at"] = datetime.utcnow()
     result = await ProductModel.create(product)
-    return {"product_id": str(result.inserted_id)}
+    product["_id"] = str(result.inserted_id)
+    return {"product": {
+        "id": product["_id"],
+        "name": product.get("name", ""),
+        "description": product.get("description", ""),
+        "price": product.get("price", 0),
+        "stock": product.get("stock", 0),
+        "category": product.get("category", ""),
+        "images": product.get("images", []),
+        "created_at": str(product.get("created_at", "")),
+    }}
 
 
 @router.put("/seller/products/{product_id}")

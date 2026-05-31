@@ -75,14 +75,10 @@ class OrderService:
         except Exception as e:
             print(f"Auto-assign skipped: {e}")
 
-        return {
-            "order_id": order_id,
-            "subtotal": subtotal,
-            "delivery_fee": delivery_fee,
-            "total_price": total,
-            "checkout_url": checkout_url,
-            "rider_assignment": rider_assignment,
-        }
+        order_data["_id"] = order_id
+        order_data["checkout_url"] = checkout_url
+        order_data["rider_assignment"] = rider_assignment
+        return order_data
 
     @staticmethod
     async def update_order_status(order_id: str, new_status: str):

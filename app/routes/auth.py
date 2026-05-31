@@ -507,6 +507,21 @@ async def update_role(data: UpdateRoleRequest, user=Depends(get_current_user)):
     }
 
 
+@router.post("/auth/forgot-password")
+async def forgot_password(data: dict):
+    email = data.get("email", "")
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
+    user = await users_collection.find_one({"email": email})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    temp_token = base64.urlsafe_b64encode(uuid.uuid4().bytes).decode().rstrip("=")
+    await users_collection.update_one(
+        {"_id": user["_id"]},
+        {"$set": {"reset_token": temp_token, "reset_token_expires": datetime.utcnow() + timedelta(hours=1)}}
+    )
+    return {"message": "Password reset email sent"}
+
 @router.get("/user/dashboard")
 def user_dashboard(user=Depends(require_role(["user"]))):
     return {"message": "Welcome USER dashboard"}
