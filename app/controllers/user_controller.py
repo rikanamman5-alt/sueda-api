@@ -7,6 +7,7 @@ from schemas.user_schema import UserCreate, UserUpdate
 from utils.deps import get_current_user
 from utils.jwt import create_access_token, create_refresh_token, hash_password, verify_password
 from utils.mongo_helpers import fix_mongo
+from datetime import datetime
 from database.collections import users_collection
 
 router = APIRouter(tags=["9. Users"])
@@ -19,6 +20,11 @@ class AccountSettingsUpdate(BaseModel):
     address: str | None = None
     current_password: str | None = None
     new_password: str | None = None
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
 
 
 def _require_same_user(email: str, current_user: dict):
@@ -320,3 +326,116 @@ async def delete_payment_method(method_id: str, current_user=Depends(get_current
     methods = [m for m in methods if str(m.get("_id") or m.get("id")) != method_id]
     await users_collection.update_one({"email": email}, {"$set": {"payment_methods": methods}})
     return {"message": "Payment method deleted"}
+
+
+@router.post("/users/change-password")
+async def change_password(
+    data: ChangePasswordRequest,
+    current_user=Depends(get_current_user),
+):
+    email = current_user.get("sub") or current_user.get("email")
+    user = await UserModel.get_user(email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    stored = user.get("password_hash")
+    if not stored or not verify_password(data.current_password, stored):
+        raise HTTPException(status_code=401, detail="Current password is incorrect")
+    if len(data.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    await users_collection.update_one(
+        {"email": email},
+        {"$set": {"password_hash": hash_password(data.new_password)}}
+    )
+    return {"message": "Password changed successfully"}
+
+
+@router.get("/users/{email}/addresses")
+async def get_addresses(email: str, current_user=Depends(get_current_user)):
+    _require_same_user(email, current_user)
+    user = await UserModel.get_user(email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"addresses": user.get("addresses", [])}
+
+
+@router.post("/users/{email}/addresses")
+async def add_address(
+    email: str,
+    data: dict,
+    current_user=Depends(get_current_user),
+):
+    _require_same_user(email, current_user)
+    user = await UserModel.get_user(email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    addresses = user.get("addresses", [])
+    new_addr = {
+        "_id": str(ObjectId()),
+        "label": data.get("label", ""),
+        "full_name": data.get("full_name", ""),
+        "phone": data.get("phone", ""),
+        "address": data.get("address", ""),
+        "is_default": data.get("is_default", False),
+    }
+    addresses.append(new_addr)
+    await users_collection.update_one({"email": email}, {"$set": {"addresses": addresses}})
+    return {"message": "Address added", "address": new_addr}
+
+
+@router.put("/users/address/{address_id}")
+async def update_address(
+    address_id: str,
+    data: dict,
+    current_user=Depends(get_current_user),
+):
+    email = current_user.get("sub") or current_user.get("email")
+    user = await UserModel.get_user(email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    addresses = user.get("addresses", [])
+    for addr in addresses:
+        if str(addr.get("_id") or addr.get("id")) == address_id:
+            if "label" in data: addr["label"] = data["label"]
+            if "full_name" in data: addr["full_name"] = data["full_name"]
+            if "phone" in data: addr["phone"] = data["phone"]
+            if "address" in data: addr["address"] = data["address"]
+            if "is_default" in data: addr["is_default"] = data["is_default"]
+            break
+    else:
+        raise HTTPException(status_code=404, detail="Address not found")
+    await users_collection.update_one({"email": email}, {"$set": {"addresses": addresses}})
+    return {"message": "Address updated"}
+
+
+@router.delete("/users/address/{address_id}")
+async def delete_address(address_id: str, current_user=Depends(get_current_user)):
+    email = current_user.get("sub") or current_user.get("email")
+    user = await UserModel.get_user(email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    addresses = user.get("addresses", [])
+    addresses = [a for a in addresses if str(a.get("_id") or a.get("id")) != address_id]
+    await users_collection.update_one({"email": email}, {"$set": {"addresses": addresses}})
+    return {"message": "Address deleted"}
+
+
+@router.post("/users/{email}/support")
+async def submit_support_ticket(
+    email: str,
+    data: dict,
+    current_user=Depends(get_current_user),
+):
+    _require_same_user(email, current_user)
+    ticket = {
+        "_id": str(ObjectId()),
+        "email": email,
+        "subject": data.get("subject", ""),
+        "message": data.get("message", ""),
+        "created_at": datetime.utcnow(),
+        "status": "open",
+    }
+    await users_collection.update_one(
+        {"email": email},
+        {"$push": {"support_tickets": ticket}}
+    )
+    return {"message": "Support ticket submitted successfully"}
