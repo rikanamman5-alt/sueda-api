@@ -199,7 +199,10 @@ async def get_seller_dashboard(seller=Depends(require_role(["seller"]))):
     for o in recent:
         buyer = None
         if o.get("buyer_id"):
-            buyer = await users_collection.find_one({"_id": ObjectId(o["buyer_id"])})
+            try:
+                buyer = await users_collection.find_one({"_id": ObjectId(o["buyer_id"])})
+            except:
+                pass
             if not buyer:
                 buyer = await users_collection.find_one({"_id": o["buyer_id"]})
         recent_orders.append({
@@ -263,7 +266,10 @@ async def get_seller_orders(seller=Depends(require_role(["seller"]))):
     for o in orders:
         buyer = None
         if o.get("buyer_id"):
-            buyer = await users_collection.find_one({"_id": ObjectId(o["buyer_id"])})
+            try:
+                buyer = await users_collection.find_one({"_id": ObjectId(o["buyer_id"])})
+            except:
+                pass
             if not buyer:
                 buyer = await users_collection.find_one({"_id": o["buyer_id"]})
 
