@@ -4,7 +4,7 @@ from typing import List
 from fastapi import APIRouter, UploadFile, File, HTTPException
 
 ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
-MAX_FILE_SIZE = 1 * 1024 * 1024
+MAX_FILE_SIZE = 10 * 1024 * 1024
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
@@ -28,7 +28,7 @@ async def upload_profile(file: UploadFile = File(...)):
     if len(content) > MAX_FILE_SIZE:
         raise HTTPException(
             status_code=400,
-            detail="File exceeds 1MB limit"
+            detail="File exceeds 10MB limit"
         )
 
     os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -81,7 +81,7 @@ async def upload_product_images(
         if len(content) > MAX_FILE_SIZE:
             raise HTTPException(
                 status_code=400,
-                detail=f"{filename} exceeds 1MB limit"
+                detail=f"{filename} exceeds 10MB limit"
             )
 
         ext = os.path.splitext(filename)[1]

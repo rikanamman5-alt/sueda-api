@@ -5,7 +5,7 @@ from core.config import BASE_DIR
 
 UPLOAD_DIR = os.path.join(BASE_DIR, "static", "uploads")
 ALLOWED_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
-MAX_SIZE = 1 * 1024 * 1024
+MAX_SIZE = 10 * 1024 * 1024
 
 router = APIRouter(tags=["10. Upload"])
 
@@ -17,7 +17,7 @@ async def upload_file(file: UploadFile = File(...)):
 
     content = await file.read()
     if len(content) > MAX_SIZE:
-        raise HTTPException(status_code=400, detail="File too large (max 1MB)")
+        raise HTTPException(status_code=400, detail="File too large (max 10MB)")
 
     os.makedirs(UPLOAD_DIR, exist_ok=True)
 
