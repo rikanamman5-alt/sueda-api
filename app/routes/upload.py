@@ -4,9 +4,16 @@ import io
 from typing import List, Optional
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from PIL import Image
-import cloudinary
-import cloudinary.uploader
 from app.core.config import CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
+
+try:
+    import cloudinary
+    import cloudinary.uploader as cloudinary_uploader
+    _cloudinary_available = True
+except ImportError:
+    cloudinary = None
+    cloudinary_uploader = None
+    _cloudinary_available = False
 
 ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
 MAX_FILE_SIZE = 10 * 1024 * 1024
@@ -18,7 +25,7 @@ UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
 PRODUCT_UPLOAD_DIR = os.path.join(UPLOAD_DIR, "products")
 
 _cloudinary_configured = False
-if CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
+if _cloudinary_available and CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
     cloudinary.config(
         cloud_name=CLOUDINARY_CLOUD_NAME,
         api_key=CLOUDINARY_API_KEY,
@@ -33,7 +40,7 @@ def _upload_to_cloudinary(content: bytes, public_id: str) -> Optional[str]:
     if not _cloudinary_configured:
         return None
     try:
-        result = cloudinary.uploader.upload(
+        result = cloudinary_uploader.upload(
             content,
             public_id=public_id,
             folder="sueda/products",
