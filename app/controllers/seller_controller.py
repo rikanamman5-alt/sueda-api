@@ -228,7 +228,15 @@ async def get_seller_dashboard(seller=Depends(require_role(["seller"]))):
             "location": r.get("location"),
         })
 
-    recent = sorted(orders, key=lambda o: o.get("created_at", datetime.min), reverse=True)[:10]
+    def _safe_date(o):
+        d = o.get("created_at")
+        if isinstance(d, datetime):
+            return d
+        try:
+            return datetime.fromisoformat(str(d)) if d else datetime.min
+        except Exception:
+            return datetime.min
+    recent = sorted(orders, key=_safe_date, reverse=True)[:10]
     recent_orders = []
     for o in recent:
         buyer = None

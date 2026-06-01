@@ -30,6 +30,16 @@ class DeliveryService:
             {"password_hash": 0, "refresh_token": 0},
         )
         if not rider:
+            rider = await users_collection.find_one(
+                {"_id": rider_id, "role": "rider"},
+                {"password_hash": 0, "refresh_token": 0},
+            )
+        if not rider:
+            rider = await users_collection.find_one(
+                {"_id": ObjectId(rider_id)},
+                {"password_hash": 0, "refresh_token": 0},
+            )
+        if not rider:
             raise ValueError("Rider not found")
 
         # Allow COD orders to be assigned even if unpaid
