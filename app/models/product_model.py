@@ -1,5 +1,6 @@
 from database.collections import products_collection
 from bson.objectid import ObjectId
+from utils.mongo_helpers import fix_mongo
 
 
 class ProductModel:
@@ -21,11 +22,12 @@ class ProductModel:
         result = await products_collection.find_one({"_id": ObjectId(product_id)})
         if result is None:
             result = await products_collection.find_one({"_id": product_id})
-        return result
+        return fix_mongo(result)
 
     @staticmethod
     async def get_by_seller(seller_id: str):
-        return await products_collection.find({"seller_id": seller_id}).to_list(100)
+        products = await products_collection.find({"seller_id": seller_id}).to_list(100)
+        return fix_mongo(products)
 
     @staticmethod
     async def search(
@@ -65,7 +67,7 @@ class ProductModel:
         )
         products = await cursor.to_list(length=limit)
         return {
-            "products": products,
+            "products": fix_mongo(products),
             "total": total,
             "page": page,
             "limit": limit,

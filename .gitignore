@@ -1,6 +1,11 @@
-.env
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.env
 venv/
-.idea/
-*.iml
+env/
+.venv/
+.Python
+pyvenv.cfg
+.DS_Store

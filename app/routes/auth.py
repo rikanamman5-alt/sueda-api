@@ -264,6 +264,83 @@ async def google_mobile_auth(data: GoogleMobileAuth):
     }
 
 
+class GoogleWebAuth(BaseModel):
+    id_token: str
+    email: str
+    name: str = ""
+
+
+@router.post("/auth/google/web")
+async def google_web_auth(data: GoogleWebAuth):
+    async with httpx.AsyncClient() as client:
+        try:
+            token_res = await client.get(
+                "https://oauth2.googleapis.com/tokeninfo",
+                params={"id_token": data.id_token},
+            )
+            if token_res.status_code != 200:
+                raise HTTPException(status_code=401, detail="Invalid Google ID token")
+            payload = token_res.json()
+            user_info = {
+                "email": payload.get("email", data.email),
+                "name": payload.get("name", data.name),
+                "picture": payload.get("picture", ""),
+            }
+        except httpx.RequestError:
+            raise HTTPException(status_code=502, detail="Failed to verify token with Google")
+
+    user = await users_collection.find_one({"email": user_info["email"]})
+
+    if not user:
+        new_user = {
+            "email": user_info["email"],
+            "name": user_info["name"],
+            "picture": user_info.get("picture"),
+            "provider": "google",
+            "role": "buyer",
+        }
+        result = await users_collection.insert_one(new_user)
+        user_id = str(result.inserted_id)
+        role = "buyer"
+    else:
+        user_id = str(user["_id"])
+        role = user.get("role", "buyer")
+
+    access_token = create_access_token({
+        "user_id": user_id,
+        "email": user_info["email"],
+        "role": role,
+    })
+
+    refresh_token = create_refresh_token({
+        "user_id": user_id,
+        "email": user_info["email"],
+        "role": role,
+    })
+
+    update_result = await users_collection.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"refresh_token": refresh_token}},
+    )
+    if update_result.matched_count == 0:
+        await users_collection.update_one(
+            {"_id": user_id},
+            {"$set": {"refresh_token": refresh_token}},
+        )
+
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer",
+        "user": {
+            "email": user_info["email"],
+            "name": user_info["name"],
+            "picture": user_info.get("picture"),
+            "role": role,
+        },
+    }
+
+
 @router.post("/auth/register")
 async def register(data: RegisterRequest):
     existing = await users_collection.find_one({"email": data.email})
