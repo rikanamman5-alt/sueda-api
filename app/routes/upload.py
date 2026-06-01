@@ -1,9 +1,12 @@
 import os
 import uuid
 import io
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from PIL import Image
+import cloudinary
+import cloudinary.uploader
+from app.core.config import CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
 
 ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
 MAX_FILE_SIZE = 10 * 1024 * 1024
@@ -14,7 +17,31 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
 PRODUCT_UPLOAD_DIR = os.path.join(UPLOAD_DIR, "products")
 
+_cloudinary_configured = False
+if CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
+    cloudinary.config(
+        cloud_name=CLOUDINARY_CLOUD_NAME,
+        api_key=CLOUDINARY_API_KEY,
+        api_secret=CLOUDINARY_API_SECRET,
+    )
+    _cloudinary_configured = True
+
 router = APIRouter(tags=["Upload"])
+
+
+def _upload_to_cloudinary(content: bytes, public_id: str) -> Optional[str]:
+    if not _cloudinary_configured:
+        return None
+    try:
+        result = cloudinary.uploader.upload(
+            content,
+            public_id=public_id,
+            folder="sueda/products",
+            resource_type="image",
+        )
+        return result.get("secure_url") or result.get("url")
+    except Exception:
+        return None
 
 
 def _compress_image(content: bytes) -> bytes:
@@ -84,7 +111,6 @@ async def upload_product_images(
             detail="Maximum 3 images only"
         )
 
-    os.makedirs(PRODUCT_UPLOAD_DIR, exist_ok=True)
     uploaded_files = []
 
     for file in files:
@@ -107,12 +133,16 @@ async def upload_product_images(
         content = _compress_image(content)
         ext = ".jpg"
         unique_filename = f"{uuid.uuid4()}{ext}"
-        file_path = os.path.join(PRODUCT_UPLOAD_DIR, unique_filename)
 
-        with open(file_path, "wb") as f:
-            f.write(content)
-
-        uploaded_files.append(unique_filename)
+        cloud_url = _upload_to_cloudinary(content, unique_filename.replace(".jpg", ""))
+        if cloud_url:
+            uploaded_files.append(cloud_url)
+        else:
+            os.makedirs(PRODUCT_UPLOAD_DIR, exist_ok=True)
+            file_path = os.path.join(PRODUCT_UPLOAD_DIR, unique_filename)
+            with open(file_path, "wb") as f:
+                f.write(content)
+            uploaded_files.append(unique_filename)
 
     return {
         "message": "Images uploaded successfully",

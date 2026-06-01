@@ -56,7 +56,7 @@ async def admin_dashboard(admin=Depends(require_role(["admin"]))):
             "id": str(o["_id"]),
             "buyer_name": buyer.get("name", "Unknown") if buyer else "Unknown",
             "status": o.get("status", ""),
-            "total": o.get("total", 0),
+            "total": o.get("total_price", 0) or o.get("total", 0),
             "created_at": str(o.get("created_at", "")),
         })
 
@@ -434,7 +434,7 @@ async def admin_list_orders(
             "buyer_email": buyer.get("email", "") if buyer else "",
             "status": o.get("status", ""),
             "payment_status": o.get("payment_status", ""),
-            "total": o.get("total", 0),
+            "total": o.get("total_price", 0) or o.get("total", 0),
             "items": o.get("items", []),
             "created_at": str(o.get("created_at", "")),
         })

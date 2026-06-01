@@ -89,15 +89,15 @@ async def google_callback(code: str):
             "name": user_info["name"],
             "picture": user_info.get("picture"),
             "provider": "google",
-            "role": "user"
+            "role": "buyer"
         }
 
         result = await users_collection.insert_one(new_user)
         user_id = str(result.inserted_id)
-        role = "user"
+        role = "buyer"
     else:
         user_id = str(user["_id"])
-        role = user.get("role", "user")
+        role = user.get("role", "buyer")
 
     access_token = create_access_token({
         "user_id": user_id,

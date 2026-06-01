@@ -1,7 +1,10 @@
+from datetime import datetime
 from fastapi import APIRouter, HTTPException, Depends, Query
+from bson.objectid import ObjectId
 from models.product_model import ProductModel
 from schemas.product_schema import ProductCreate, ProductUpdate
 from utils.deps import require_role
+from database.collections import users_collection
 
 router = APIRouter(tags=["2. Products"])
 
@@ -13,6 +16,7 @@ async def create_product(
 ):
     product = data.model_dump()
     product["seller_id"] = seller["user_id"]
+    product["created_at"] = datetime.utcnow()
     result = await ProductModel.create(product)
     return {"product_id": str(result.inserted_id)}
 
@@ -39,6 +43,23 @@ async def list_products(
         page=page,
         limit=limit,
     )
+    products = result.get("products", [])
+    for p in products:
+        seller_id = p.get("seller_id")
+        if seller_id:
+            seller = None
+            try:
+                seller = await users_collection.find_one({"_id": ObjectId(seller_id)})
+            except Exception:
+                pass
+            if not seller:
+                seller = await users_collection.find_one({"_id": seller_id})
+            if seller:
+                p["shop_name"] = (
+                    seller.get("shop_name") or
+                    seller.get("store_name") or
+                    seller.get("name", "")
+                )
     return result
 
 
