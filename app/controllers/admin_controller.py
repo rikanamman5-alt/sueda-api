@@ -165,7 +165,25 @@ async def admin_get_user_detail(
         result["verification_status"] = user.get("verification_status", "")
         result["verification_reject_reason"] = user.get("verification_reject_reason", "")
 
-        product_count = await products_collection.count_documents({"seller_id": user_id})
+        products = await products_collection.find({
+            "$or": [
+                {"seller_id": user_id},
+                {"seller_id": ObjectId(user_id)}
+            ]
+        }).sort("created_at", -1).limit(50).to_list(50)
+        result["products"] = [
+            {
+                "id": str(p["_id"]),
+                "name": p.get("name", ""),
+                "price": p.get("price", 0),
+                "stock": p.get("stock", 0),
+                "images": p.get("images", []),
+                "category": p.get("category", ""),
+                "created_at": str(p.get("created_at", "")),
+            }
+            for p in products
+        ]
+
         seller_orders = await orders_collection.find({
             "$or": [
                 {"seller_id": user_id},
@@ -174,7 +192,7 @@ async def admin_get_user_detail(
         }).to_list(200)
         total_orders = len(seller_orders)
         total_revenue = sum(o.get("total_price", 0) or 0 for o in seller_orders if o.get("status") == "delivered")
-        result["product_count"] = product_count
+        result["product_count"] = len(products)
         result["total_orders"] = total_orders
         result["total_revenue"] = total_revenue
 
