@@ -97,3 +97,35 @@ async def update_status(order_id: str, status: str):
         return {"message": f"Order status updated to {status}"}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/orders/{order_id}/cancel")
+async def cancel_order(order_id: str):
+    order = await OrderService.get_by_id(order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    current_status = order.get("status", "")
+    if current_status not in ("pending",):
+        raise HTTPException(
+            status_code=400,
+            detail="Only pending orders can be cancelled",
+        )
+    from models.product_model import ProductModel
+    from bson.objectid import ObjectId as OID
+    items = order.get("items", [])
+    for item in items:
+        product = await ProductModel.get_by_id(item["product_id"])
+        if product:
+            new_stock = (product.get("stock", 0) or 0) + item.get("quantity", 0)
+            await ProductModel.update(item["product_id"], {"stock": new_stock})
+    await OrderModel.update_status(order_id, "cancelled")
+    await OrderModel.update_payment_status(order_id, "refunded")
+    order_obj = await OrderService.get_by_id(order_id)
+    delivery_id = order_obj.get("delivery_id") if order_obj else None
+    if delivery_id:
+        try:
+            from models.delivery_model import DeliveryModel
+            await DeliveryModel.update_status(delivery_id, "cancelled")
+        except Exception:
+            pass
+    return {"message": "Order cancelled successfully"}

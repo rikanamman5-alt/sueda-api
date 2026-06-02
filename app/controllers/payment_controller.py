@@ -1,11 +1,15 @@
 from fastapi import APIRouter, HTTPException, Request, Depends
 from pydantic import BaseModel
 from bson.objectid import ObjectId
+from starlette.responses import RedirectResponse
+
 from services.paymaya_service import PayMayaService
 from models.payment_model import PaymentModel
+from models.order_model import OrderModel
 from services.payment_service import PaymentService
 from utils.deps import get_current_user
 from database.collections import users_collection, orders_collection
+from core.config import BASE_DIR
 
 router = APIRouter(tags=["5. Payment"])
 
@@ -55,12 +59,52 @@ async def confirm_card(data: PaymentConfirmRequest):
 
 
 @router.post("/pay/create/{order_id}")
-async def create_payment(order_id: str, amount: float):
-    checkout = PayMayaService.create_checkout(order_id, amount)
-    await PaymentService.create_payment_record(
-        order_id, amount, checkout.get("checkoutId")
+async def create_payment(order_id: str):
+    order = await _find_order(order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    amount = float(order.get("total_price", 0))
+    items = order.get("items", [])
+
+    checkout = PayMayaService.create_checkout(
+        order_id=order_id,
+        amount=amount,
+        items=[
+            {
+                "name": item.get("product_name", f"Item"),
+                "quantity": item.get("quantity", 1),
+                "amount": float(item.get("price", 0)),
+            }
+            for item in items
+        ],
+        redirect_base="https://sueda-api-1.onrender.com",
     )
-    return checkout
+
+    checkout_id = checkout.get("checkoutId")
+    if checkout_id:
+        await PaymentService.create_payment_record(order_id, amount, checkout_id)
+
+    redirect_url = checkout.get("redirectUrl", {}).get(
+        "checkoutUrl", checkout.get("checkoutUrl")
+    )
+
+    return {
+        "checkout_url": redirect_url or checkout.get("redirectUrl", {}).get("url"),
+        "checkout_id": checkout_id,
+    }
+
+
+@router.get("/pay/status/{order_id}")
+async def get_payment_status(order_id: str):
+    payment = await PaymentModel.get_by_order(order_id)
+    order = await _find_order(order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return {
+        "payment_status": order.get("payment_status", "unpaid"),
+        "order_status": order.get("status", "pending"),
+    }
 
 
 @router.post("/pay/webhook")
@@ -82,16 +126,32 @@ async def payment_webhook(request: Request):
 @router.get("/pay/success")
 async def payment_success(order_id: str):
     try:
-        return await PaymentService.process_success(order_id)
+        result = await PaymentService.process_success(order_id)
+        return RedirectResponse(
+            url=f"https://sueda-api-1.onrender.com/pay/result?order_id={order_id}&status=success"
+        )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.get("/pay/fail")
-async def payment_fail():
+async def payment_fail(order_id: str = None):
+    if order_id:
+        return RedirectResponse(
+            url=f"https://sueda-api-1.onrender.com/pay/result?order_id={order_id}&status=failed"
+        )
     return {"message": "Payment failed"}
 
 
 @router.get("/pay/cancel")
-async def payment_cancel():
+async def payment_cancel(order_id: str = None):
+    if order_id:
+        return RedirectResponse(
+            url=f"https://sueda-api-1.onrender.com/pay/result?order_id={order_id}&status=cancelled"
+        )
     return {"message": "Payment cancelled"}
+
+
+@router.get("/pay/result")
+async def payment_result(order_id: str = None, status: str = None):
+    return {"order_id": order_id, "status": status}
