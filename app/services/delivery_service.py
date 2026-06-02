@@ -299,6 +299,7 @@ class DeliveryService:
 
         if new_status == "delivered":
             await OrderModel.update_status(order_id, "delivered")
+            await DeliveryModel.update(order_id, {"delivered_at": datetime.utcnow()})
             if rider_id:
                 try:
                     await users_collection.update_one(
