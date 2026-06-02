@@ -1,5 +1,6 @@
 from models.payment_model import PaymentModel
 from models.order_model import OrderModel
+from services.notification_service import notify_order_status
 
 PAYMENT_FLOW = {
     "pending": {"paid", "failed"},
@@ -44,6 +45,13 @@ class PaymentService:
         await PaymentModel.update_status(order_id, "paid")
         await OrderModel.update_status(order_id, "paid")
         await OrderModel.update_payment_status(order_id, "paid")
+
+        order = await OrderModel.get_by_id(order_id)
+        if order:
+            try:
+                await notify_order_status(order, "paid")
+            except Exception:
+                pass
 
         try:
             from services.rider_service import RiderService

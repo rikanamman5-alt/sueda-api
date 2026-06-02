@@ -427,6 +427,13 @@ async def update_seller_order_status(
         raise HTTPException(status_code=403, detail="Not your order")
 
     await OrderModel.update_status(order_id, data.status)
+    order = await OrderModel.get_by_id(order_id)
+    if order:
+        try:
+            from services.notification_service import notify_order_status
+            await notify_order_status(order, data.status)
+        except Exception as e:
+            print(f"Push notification skipped: {e}")
     return {"status": data.status}
 
 

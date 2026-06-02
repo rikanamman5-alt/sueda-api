@@ -6,17 +6,23 @@ sys.path.append(BASE)
 sys.path.append(os.path.join(BASE, "app"))
 
 import os
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+import jwt
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, Query
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.staticfiles import StaticFiles
-from app.core.config import BASE_DIR
+from app.core.config import BASE_DIR, SECRET_KEY, ALGORITHM
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-from app.controllers import auth_controller, user_controller, order_controller, payment_controller, product_controller, delivery_controller, cart_controller, seller_controller, rider_controller, upload_controller, admin_controller, rating_controller, delivery_fee_controller
+from app.controllers import (
+    auth_controller, user_controller, order_controller, payment_controller,
+    product_controller, delivery_controller, cart_controller, seller_controller,
+    rider_controller, upload_controller, admin_controller, rating_controller,
+    delivery_fee_controller,
+)
 from app.routes import auth as auth_routes, upload as upload_routes
 from app.database.mongo import db
 from app.core.config import MONGO_URI, DB_NAME, CORS_ORIGINS, ADMIN_EMAIL, ADMIN_PASSWORD
@@ -113,25 +119,35 @@ async def shutdown():
     print("[OK] MongoDB disconnected")
 
 
-active_connections = []
-
-
 @app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    active_connections.append(websocket)
-    print("WebSocket client connected")
+async def websocket_endpoint(websocket: WebSocket, token: str = Query("")):
+    user_email = None
+    if token:
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            if payload.get("type") == "access":
+                user_email = payload.get("email") or payload.get("user_id")
+        except Exception:
+            pass
+
+    if user_email:
+        await ws_manager.connect_user(user_email, websocket)
+        print(f"WebSocket user connected: {user_email}")
+    else:
+        await websocket.accept()
+        print("WebSocket anonymous client connected")
+
     try:
         while True:
             data = await websocket.receive_text()
-            print("Received:", data)
-            await websocket.send_text(
-                f"Server received: {data}"
-            )
+            if data == "ping":
+                await websocket.send_text("pong")
     except WebSocketDisconnect:
-        active_connections.remove(websocket)
-        print("WebSocket client disconnected")
-        print(f"Active connections: {len(active_connections)}")
+        if user_email:
+            ws_manager.disconnect_user(user_email, websocket)
+            print(f"WebSocket user disconnected: {user_email}")
+        else:
+            print("WebSocket anonymous client disconnected")
 
 
 app.include_router(auth_routes.router)

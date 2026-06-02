@@ -245,6 +245,20 @@ async def mark_notification_read(
     return {"message": "Notification updated"}
 
 
+@router.patch("/users/notifications/read-all")
+async def mark_all_notifications_read(current_user=Depends(get_current_user)):
+    email = current_user.get("email") or current_user.get("user_id")
+    user = await UserModel.get_user(email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    notifications = user.get("notifications") or []
+    for notification in notifications:
+        notification["read"] = True
+    await UserModel.update_user(email, {"notifications": notifications})
+    return {"message": "All notifications marked as read"}
+
+
 @router.put("/users/{email}/notification-settings")
 async def update_notification_settings(
     email: str,
