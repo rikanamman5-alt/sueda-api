@@ -2,6 +2,8 @@ from fastapi import APIRouter, HTTPException
 from bson.objectid import ObjectId
 from database.collections import users_collection
 from models.product_model import ProductModel
+from models.order_model import OrderModel
+from models.delivery_model import DeliveryModel
 from schemas.order_schema import OrderCreate
 from services.order_service import OrderService
 from services.notification_service import notify_order_status
@@ -116,8 +118,6 @@ async def cancel_order(order_id: str):
             status_code=400,
             detail="Only pending orders can be cancelled",
         )
-    from models.product_model import ProductModel
-    from bson.objectid import ObjectId as OID
     items = order.get("items", [])
     for item in items:
         product = await ProductModel.get_by_id(item["product_id"])
@@ -126,14 +126,19 @@ async def cancel_order(order_id: str):
             await ProductModel.update(item["product_id"], {"stock": new_stock})
     await OrderModel.update_status(order_id, "cancelled")
     await OrderModel.update_payment_status(order_id, "refunded")
-    order_obj = await OrderService.get_by_id(order_id)
-    delivery_id = order_obj.get("delivery_id") if order_obj else None
-    if delivery_id:
-        try:
-            from models.delivery_model import DeliveryModel
-            await DeliveryModel.update_status(delivery_id, "cancelled")
-        except Exception:
-            pass
+    try:
+        delivery = await DeliveryModel.get_by_order(order_id)
+        if delivery and delivery.get("status") not in ("delivered", "cancelled"):
+            if delivery.get("rider_id"):
+                from services.delivery_service import DeliveryService
+                try:
+                    await DeliveryService.cancel_assignment(order_id)
+                except ValueError:
+                    await DeliveryModel.update_status(order_id, "cancelled")
+            else:
+                await DeliveryModel.update_status(order_id, "cancelled")
+    except Exception as e:
+        print(f"Delivery cancellation skipped: {e}")
     try:
         await notify_order_status(order, "cancelled")
     except Exception as e:
