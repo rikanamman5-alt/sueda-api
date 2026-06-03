@@ -145,6 +145,11 @@ async def admin_get_user_detail(
         "contact_number": user.get("contact_number", ""),
         "address": user.get("address", ""),
         "picture": user.get("picture", ""),
+        "gcash_name": user.get("gcash_name", ""),
+        "gcash_number": user.get("gcash_number", ""),
+        "card_number": user.get("card_number", ""),
+        "card_holder_name": user.get("card_holder_name", ""),
+        "card_expiry": user.get("card_expiry", ""),
         "created_at": str(user.get("created_at", "")),
     }
 
@@ -428,6 +433,16 @@ async def admin_list_orders(
             buyer = await users_collection.find_one({"_id": ObjectId(o["buyer_id"])})
             if not buyer:
                 buyer = await users_collection.find_one({"_id": o["buyer_id"]})
+        enriched_items = []
+        for item in o.get("items", []):
+            product = await ProductModel.get_by_id(item["product_id"])
+            enriched_items.append({
+                "product_id": item["product_id"],
+                "quantity": item["quantity"],
+                "price": item["price"],
+                "product_name": product.get("name", "Product") if product else "Product",
+                "product_image": product.get("images", [None])[0] if product and product.get("images") else None,
+            })
         result.append({
             "id": str(o["_id"]),
             "buyer_name": buyer.get("name", "Unknown") if buyer else "Unknown",
@@ -435,7 +450,7 @@ async def admin_list_orders(
             "status": o.get("status", ""),
             "payment_status": o.get("payment_status", ""),
             "total": o.get("total_price", 0) or o.get("total", 0),
-            "items": o.get("items", []),
+            "items": enriched_items,
             "created_at": str(o.get("created_at", "")),
         })
     return {"orders": result, "total": total, "page": page, "limit": limit, "pages": (total + limit - 1) // limit}
