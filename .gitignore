@@ -1,0 +1,16 @@
+# Backend
+backend/.env
+backend/uploads/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/.pytest_cache/
+
+# Frontend (not included in this repo)
+frontend/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

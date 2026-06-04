@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: sueda-api
+    env: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URI
+        sync: false
