@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from database.collections import ratings_collection, products_collection, orders_collection
 from bson.objectid import ObjectId
 
@@ -22,14 +22,14 @@ class RatingModel:
         if existing:
             await ratings_collection.update_one(
                 {"_id": existing["_id"]},
-                {"$set": {"rating": rating, "updated_at": datetime.utcnow()}}
+                {"$set": {"rating": rating, "updated_at": datetime.now(timezone.utc)}}
             )
         else:
             await ratings_collection.insert_one({
                 "product_id": product_id,
                 "user_id": user_id,
                 "rating": rating,
-                "created_at": datetime.utcnow(),
+                "created_at": datetime.now(timezone.utc),
             })
 
         await RatingModel._update_product_avg(product_id)

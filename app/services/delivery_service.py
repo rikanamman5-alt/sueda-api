@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from bson.objectid import ObjectId
 from database.collections import users_collection
 from models.delivery_model import DeliveryModel
@@ -46,7 +46,7 @@ class DeliveryService:
         payment_method = order.get("payment_method", "")
         payment_status = order.get("payment_status", "unpaid")
 
-        if payment_method.lower() not in ("cod", "cash on delivery") and payment_status != "paid":
+        if (payment_method or "").lower() not in ("cod", "cash on delivery") and payment_status != "paid":
             raise HTTPException(
                 status_code=400,
                 detail="Order must be paid before assigning a rider"
@@ -81,7 +81,7 @@ class DeliveryService:
                 {
                     "rider_id": rider_id,
                     "status": "assigned",
-                    "assigned_at": datetime.utcnow(),
+                    "assigned_at": datetime.now(timezone.utc),
                 },
             )
             result = None
@@ -236,7 +236,7 @@ class DeliveryService:
         await DeliveryModel.update(order_id, {
             "status": "assigned",
             "rider_id": result["rider_id"],
-            "assigned_at": datetime.utcnow(),
+            "assigned_at": datetime.now(timezone.utc),
         })
 
         return result
@@ -244,12 +244,15 @@ class DeliveryService:
     @staticmethod
     async def check_timeouts():
         assigned = await DeliveryModel.get_all_assigned()
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         expired = []
         for d in assigned:
             assigned_at = d.get("assigned_at")
-            if assigned_at and now - assigned_at > timedelta(minutes=5):
-                expired.append(d["order_id"])
+            if assigned_at:
+                if assigned_at.tzinfo is None:
+                    assigned_at = assigned_at.replace(tzinfo=timezone.utc)
+                if now - assigned_at > timedelta(minutes=5):
+                    expired.append(d["order_id"])
         return expired
 
     @staticmethod
@@ -299,7 +302,7 @@ class DeliveryService:
 
         if new_status == "delivered":
             await OrderModel.update_status(order_id, "delivered")
-            await DeliveryModel.update(order_id, {"delivered_at": datetime.utcnow()})
+            await DeliveryModel.update(order_id, {"delivered_at": datetime.now(timezone.utc)})
             if rider_id:
                 try:
                     await users_collection.update_one(

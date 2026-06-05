@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from models.order_model import OrderModel
 from models.product_model import ProductModel
 from services.paymaya_service import PayMayaService
@@ -50,13 +50,13 @@ class OrderService:
         order_data["status"] = "pending"
         order_data["payment_status"] = "unpaid"
 
-        order_data["created_at"] = datetime.utcnow()
+        order_data["created_at"] = datetime.now(timezone.utc)
         result = await OrderModel.create(order_data)
         order_id = str(result.inserted_id)
 
         checkout_url = None
         try:
-            checkout = PayMayaService.create_checkout(order_id, total)
+            checkout = await PayMayaService.create_checkout(order_id, total)
             checkout_url = checkout.get("redirectUrl")
             payment_data = {
                 "order_id": order_id,

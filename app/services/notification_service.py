@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from bson.objectid import ObjectId
 from database.collections import users_collection
 from services.websocket_manager import ws_manager
@@ -20,7 +20,7 @@ async def create_notification(email: str, title: str, message: str, data: dict |
         "id": str(ObjectId()),
         "title": title,
         "message": message,
-        "time": datetime.utcnow().isoformat(),
+        "time": datetime.now(timezone.utc).isoformat(),
         "read": False,
         "data": data or {},
     }
@@ -37,11 +37,20 @@ async def create_notification(email: str, title: str, message: str, data: dict |
 
 
 async def notify_order_status(order: dict, new_status: str):
-    buyer_email = order.get("buyer_email") or order.get("buyer_id")
+    buyer_email = order.get("buyer_email")
+    buyer_id = order.get("buyer_id")
     seller_id = order.get("seller_id")
     order_id_str = str(order.get("_id", ""))
     short_id = order_id_str[-8:]
     label = STATUS_LABELS.get(new_status, new_status.capitalize())
+
+    if not buyer_email and buyer_id:
+        try:
+            buyer = await users_collection.find_one({"_id": ObjectId(str(buyer_id))})
+            if buyer:
+                buyer_email = buyer.get("email")
+        except Exception:
+            pass
 
     if buyer_email:
         await create_notification(

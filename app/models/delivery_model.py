@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from database.collections import deliveries_collection
 
 
@@ -7,7 +7,7 @@ class DeliveryModel:
     @staticmethod
     async def create(delivery: dict):
         delivery["status"] = "assigned"
-        delivery["assigned_at"] = datetime.utcnow()
+        delivery["assigned_at"] = datetime.now(timezone.utc)
         return await deliveries_collection.insert_one(delivery)
 
     @staticmethod

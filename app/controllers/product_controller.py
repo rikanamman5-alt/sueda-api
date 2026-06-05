@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException, Depends, Query
 from bson.objectid import ObjectId
 from models.product_model import ProductModel
@@ -16,7 +16,7 @@ async def create_product(
 ):
     product = data.model_dump()
     product["seller_id"] = seller["user_id"]
-    product["created_at"] = datetime.utcnow()
+    product["created_at"] = datetime.now(timezone.utc)
     result = await ProductModel.create(product)
     return {"product_id": str(result.inserted_id)}
 

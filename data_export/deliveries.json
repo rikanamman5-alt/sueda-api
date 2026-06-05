@@ -1,0 +1,23 @@
+[
+  {
+    "_id": "6a1477b3e19b516a706dfe77",
+    "order_id": "6a147733e19b516a706dfe75",
+    "rider_id": "6a1022729b901a8674c3f06b",
+    "status": "assigned",
+    "assigned_at": "2026-05-25 16:24:19.280000"
+  },
+  {
+    "_id": "6a15daa4d232cb7cfbacf37c",
+    "order_id": "6a15a9886e683f06f1016ed9",
+    "rider_id": "6a1283f3309917e5f2ed7cb8",
+    "status": "delivered",
+    "assigned_at": "2026-05-26 17:38:44.381000"
+  },
+  {
+    "_id": "6a17a0553477f96f2405953b",
+    "order_id": "6a15a8e16e683f06f1016ed7",
+    "rider_id": "6a1283f3309917e5f2ed7cb8",
+    "status": "assigned",
+    "assigned_at": "2026-05-28 01:54:29.317000"
+  }
+]

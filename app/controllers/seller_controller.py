@@ -1,7 +1,7 @@
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, timezone
 from models.user_model import UserModel
 from models.product_model import ProductModel
 from models.order_model import OrderModel
@@ -112,7 +112,7 @@ async def create_seller_product(
     product = data.model_dump()
     seller_id = seller.get("user_id") or seller.get("email")
     product["seller_id"] = seller_id
-    product["created_at"] = datetime.utcnow()
+    product["created_at"] = datetime.now(timezone.utc)
     result = await ProductModel.create(product)
     product["_id"] = str(result.inserted_id)
     return {"product": {
@@ -143,7 +143,7 @@ async def update_seller_product(
     if not is_valid_seller and len(str(seller_id)) == 24:
         try:
             is_valid_seller = str(product.get("seller_id")) == str(ObjectId(seller_id))
-        except:
+        except Exception:
             pass
     if not is_valid_seller:
         raise HTTPException(status_code=403, detail="Not your product")
@@ -167,7 +167,7 @@ async def delete_seller_product(
     if not is_valid_seller and len(str(seller_id)) == 24:
         try:
             is_valid_seller = str(product.get("seller_id")) == str(ObjectId(seller_id))
-        except:
+        except Exception:
             pass
     if not is_valid_seller:
         raise HTTPException(status_code=403, detail="Not your product")
@@ -192,7 +192,7 @@ async def get_seller_dashboard(seller=Depends(require_role(["seller"]))):
     try:
         if len(str(seller_id)) == 24:
             seller_id_obj = ObjectId(seller_id)
-    except:
+    except Exception:
         pass
     query = {"seller_id": seller_id}
     if seller_id_obj:
@@ -207,11 +207,11 @@ async def get_seller_dashboard(seller=Depends(require_role(["seller"]))):
 
     total_revenue = sum(o.get("total_price", 0) for o in orders if o.get("status") == "delivered")
 
-    today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
     today_orders = [
         o for o in orders
         if isinstance(o.get("created_at"), datetime)
-        and o["created_at"] >= today_start
+        and (o["created_at"].replace(tzinfo=timezone.utc) if o["created_at"].tzinfo is None else o["created_at"]) >= today_start
     ]
     today_sales = sum(o.get("total_price", 0) for o in today_orders)
 
@@ -243,7 +243,7 @@ async def get_seller_dashboard(seller=Depends(require_role(["seller"]))):
         if o.get("buyer_id"):
             try:
                 buyer = await users_collection.find_one({"_id": ObjectId(o["buyer_id"])})
-            except:
+            except Exception:
                 pass
             if not buyer:
                 buyer = await users_collection.find_one({"_id": o["buyer_id"]})
@@ -307,7 +307,7 @@ async def get_seller_orders(seller=Depends(require_role(["seller"]))):
     try:
         if len(str(seller_id)) == 24:
             seller_id_obj = ObjectId(seller_id)
-    except:
+    except Exception:
         pass
     query = {"seller_id": seller_id}
     if seller_id_obj:
@@ -319,7 +319,7 @@ async def get_seller_orders(seller=Depends(require_role(["seller"]))):
         if o.get("buyer_id"):
             try:
                 buyer = await users_collection.find_one({"_id": ObjectId(o["buyer_id"])})
-            except:
+            except Exception:
                 pass
             if not buyer:
                 buyer = await users_collection.find_one({"_id": o["buyer_id"]})
@@ -392,7 +392,7 @@ async def update_seller_order_payment(
     if not is_valid_seller and len(str(seller_id)) == 24:
         try:
             is_valid_seller = str(order.get("seller_id")) == str(ObjectId(seller_id))
-        except:
+        except Exception:
             pass
     if not is_valid_seller:
         raise HTTPException(status_code=403, detail="Not your order")
@@ -421,7 +421,7 @@ async def update_seller_order_status(
     if not is_valid_seller and len(str(seller_id)) == 24:
         try:
             is_valid_seller = str(order.get("seller_id")) == str(ObjectId(seller_id))
-        except:
+        except Exception:
             pass
     if not is_valid_seller:
         raise HTTPException(status_code=403, detail="Not your order")

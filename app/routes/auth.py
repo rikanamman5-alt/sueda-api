@@ -1,6 +1,6 @@
 import uuid
 import base64
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, HTTPException, Depends
 import jwt
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -198,19 +198,36 @@ class GoogleMobileAuth(BaseModel):
 async def google_mobile_auth(data: GoogleMobileAuth):
     async with httpx.AsyncClient() as client:
         try:
+            # First try userinfo endpoint
             user_res = await client.get(
                 GOOGLE_USERINFO_URL,
                 headers={"Authorization": f"Bearer {data.access_token}"}
             )
             if user_res.status_code != 200:
-                raise HTTPException(status_code=401, detail="Invalid Google access token")
-            user_info = {
-                "email": user_res.json().get("email"),
-                "name": user_res.json().get("name", data.name),
-                "picture": user_res.json().get("picture", ""),
-            }
+                # Fallback: try tokeninfo endpoint
+                token_res = await client.get(
+                    "https://oauth2.googleapis.com/tokeninfo",
+                    params={"access_token": data.access_token},
+                )
+                if token_res.status_code != 200:
+                    raise HTTPException(status_code=401, detail="Invalid Google access token")
+                payload = token_res.json()
+                user_info = {
+                    "email": payload.get("email", data.email),
+                    "name": payload.get("name", data.name),
+                    "picture": payload.get("picture", ""),
+                }
+            else:
+                user_info = {
+                    "email": user_res.json().get("email"),
+                    "name": user_res.json().get("name", data.name),
+                    "picture": user_res.json().get("picture", ""),
+                }
         except httpx.RequestError:
             raise HTTPException(status_code=502, detail="Failed to verify token with Google")
+
+    if not user_info.get("email"):
+        raise HTTPException(status_code=400, detail="Could not retrieve email from Google")
 
     user = await users_collection.find_one({"email": user_info["email"]})
 
@@ -288,6 +305,9 @@ async def google_web_auth(data: GoogleWebAuth):
             }
         except httpx.RequestError:
             raise HTTPException(status_code=502, detail="Failed to verify token with Google")
+
+    if not user_info.get("email"):
+        raise HTTPException(status_code=400, detail="Could not retrieve email from Google")
 
     user = await users_collection.find_one({"email": user_info["email"]})
 
@@ -595,12 +615,12 @@ async def forgot_password(data: dict):
     temp_token = base64.urlsafe_b64encode(uuid.uuid4().bytes).decode().rstrip("=")
     await users_collection.update_one(
         {"_id": user["_id"]},
-        {"$set": {"reset_token": temp_token, "reset_token_expires": datetime.utcnow() + timedelta(hours=1)}}
+        {"$set": {"reset_token": temp_token, "reset_token_expires": datetime.now(timezone.utc) + timedelta(hours=1)}}
     )
     return {"message": "Password reset email sent"}
 
 @router.get("/user/dashboard")
-def user_dashboard(user=Depends(require_role(["user"]))):
+def user_dashboard(user=Depends(require_role(["buyer", "seller", "rider"]))):
     return {"message": "Welcome USER dashboard"}
 
 

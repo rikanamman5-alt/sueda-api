@@ -1,5 +1,5 @@
 import math
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from bson.objectid import ObjectId
 from database.collections import users_collection
 from models.delivery_model import DeliveryModel
@@ -116,7 +116,7 @@ class RiderService:
             await DeliveryModel.update(order_id, {
                 "rider_id": rider_id,
                 "status": "assigned",
-                "assigned_at": datetime.utcnow(),
+                "assigned_at": datetime.now(timezone.utc),
             })
         else:
             delivery = {
@@ -143,8 +143,11 @@ class RiderService:
 
         # Check if 5 min has passed
         assigned_at = delivery.get("assigned_at")
-        if assigned_at and datetime.utcnow() - assigned_at < timedelta(minutes=5):
-            raise ValueError("Rider still has time to respond")
+        if assigned_at:
+            if assigned_at.tzinfo is None:
+                assigned_at = assigned_at.replace(tzinfo=timezone.utc)
+            if datetime.now(timezone.utc) - assigned_at < timedelta(minutes=5):
+                raise ValueError("Rider still has time to respond")
 
         # Mark current as expired and free the rider
         old_rider_id = delivery.get("rider_id")

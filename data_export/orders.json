@@ -1,0 +1,682 @@
+[
+  {
+    "_id": "6a11be1e851030f196de2c40",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a0dee786815ad396e53ab7e",
+    "items": [
+      {
+        "product_id": "6a11b1068f60a1158c5b9a22",
+        "quantity": 2,
+        "price": 1200.0
+      },
+      {
+        "product_id": "6a11a8ee6069b22d29a7a2fb",
+        "quantity": 1,
+        "price": 50.0
+      }
+    ],
+    "delivery_address": "sanga-sanga",
+    "buyer_contact": "0987654321",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "subtotal": 2450.0,
+    "delivery_fee": 0.0,
+    "total_price": 2450.0,
+    "status": "shipped",
+    "payment_status": "unpaid"
+  },
+  {
+    "_id": "6a11c0c7a93cb212779b3edb",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a0dee786815ad396e53ab7e",
+    "items": [
+      {
+        "product_id": "6a1080237b01bf9fa4e2c316",
+        "quantity": 5,
+        "price": 23.0
+      }
+    ],
+    "delivery_address": "sanga2",
+    "buyer_contact": "0987654321",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "subtotal": 115.0,
+    "delivery_fee": 0.0,
+    "total_price": 115.0,
+    "status": "shipped",
+    "payment_status": "unpaid"
+  },
+  {
+    "_id": "6a11c5019bf16841d59d29f2",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a0dee786815ad396e53ab7e",
+    "items": [
+      {
+        "product_id": "6a11b1068f60a1158c5b9a22",
+        "quantity": 2,
+        "price": 1200.0
+      }
+    ],
+    "delivery_address": "pagasinan",
+    "buyer_contact": "0987654321",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "subtotal": 2400.0,
+    "delivery_fee": 0.0,
+    "total_price": 2400.0,
+    "status": "shipped",
+    "payment_status": "unpaid"
+  },
+  {
+    "_id": "6a12c338e5cb1272808d55be",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a1283f3309917e5f2ed7cb8",
+    "items": [
+      {
+        "product_id": "6a128bd4e5cb1272808d55bd",
+        "quantity": 1,
+        "price": 80.0
+      }
+    ],
+    "delivery_address": "pagasinan",
+    "buyer_contact": "0909090909",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "subtotal": 80.0,
+    "delivery_fee": 0.0,
+    "total_price": 80.0,
+    "status": "shipped",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-24 09:22:00.648000"
+  },
+  {
+    "_id": "6a12cabe9e9ef857a608a050",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a0dee786815ad396e53ab7e",
+    "items": [
+      {
+        "product_id": "6a11b1068f60a1158c5b9a22",
+        "quantity": 1,
+        "price": 1200.0
+      }
+    ],
+    "delivery_address": "pagasinan",
+    "buyer_contact": "0000000000",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "subtotal": 1200.0,
+    "delivery_fee": 0.0,
+    "total_price": 1200.0,
+    "status": "shipped",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-24 09:54:06.624000"
+  },
+  {
+    "_id": "6a12e01d5505d5bda8ae8d2e",
+    "buyer_id": "6a1283f3309917e5f2ed7cb8",
+    "seller_id": "6a0dee786815ad396e53ab7e",
+    "items": [
+      {
+        "product_id": "6a11a8ee6069b22d29a7a2fb",
+        "quantity": 1,
+        "price": 50.0
+      }
+    ],
+    "delivery_address": "welcome",
+    "buyer_contact": "9999999999",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "subtotal": 50.0,
+    "delivery_fee": 0.0,
+    "total_price": 50.0,
+    "status": "shipped",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-24 11:25:17.123000"
+  },
+  {
+    "_id": "6a130b4aad3746b8e30dbb1d",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a0dee786815ad396e53ab7e",
+    "items": [
+      {
+        "product_id": "6a1080237b01bf9fa4e2c316",
+        "quantity": 1,
+        "price": 23.0
+      }
+    ],
+    "delivery_address": "pagasianan",
+    "buyer_contact": "1111111111",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "subtotal": 23.0,
+    "delivery_fee": 0.0,
+    "total_price": 23.0,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-24 14:29:30.986000"
+  },
+  {
+    "_id": "6a144da02209c24f36afdc5d",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a1283f3309917e5f2ed7cb8",
+    "items": [
+      {
+        "product_id": "6a128bd4e5cb1272808d55bd",
+        "quantity": 1,
+        "price": 80.0
+      }
+    ],
+    "delivery_address": "sanga",
+    "buyer_contact": "99999999999",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "subtotal": 80.0,
+    "delivery_fee": 0.0,
+    "total_price": 80.0,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-25 13:24:48.410000"
+  },
+  {
+    "_id": "6a1453dec1271bbd2ddab7e5",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a1283f3309917e5f2ed7cb8",
+    "items": [
+      {
+        "product_id": "6a128bd4e5cb1272808d55bd",
+        "quantity": 1,
+        "price": 80.0
+      }
+    ],
+    "delivery_address": "patal",
+    "buyer_contact": "123456789",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "subtotal": 80.0,
+    "delivery_fee": 0.0,
+    "total_price": 80.0,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-25 13:51:26.569000"
+  },
+  {
+    "_id": "6a1463f8a5fe57e544d98f21",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a0dee786815ad396e53ab7e",
+    "items": [
+      {
+        "product_id": "6a11a8ee6069b22d29a7a2fb",
+        "quantity": 1,
+        "price": 50.0
+      }
+    ],
+    "delivery_address": "pagasinan",
+    "buyer_contact": "22222222",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "subtotal": 50.0,
+    "delivery_fee": 0.0,
+    "total_price": 50.0,
+    "status": "delivered",
+    "payment_status": "paid",
+    "created_at": "2026-05-25 15:00:08.755000",
+    "delivery_status": "delivered",
+    "rider_id": "6a107f927b01bf9fa4e2c315",
+    "buyer_removed": true
+  },
+  {
+    "_id": "6a147733e19b516a706dfe75",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a0dee786815ad396e53ab7e",
+    "items": [
+      {
+        "product_id": "6a11cb1c84a11860c82df1ae",
+        "quantity": 1,
+        "price": 45.0
+      }
+    ],
+    "delivery_address": "banaran",
+    "buyer_contact": "6666666666",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "payment_method": "Cash on Delivery",
+    "subtotal": 45.0,
+    "delivery_fee": 0.0,
+    "total_price": 45.0,
+    "status": "shipped",
+    "payment_status": "paid",
+    "created_at": "2026-05-25 16:22:11.010000"
+  },
+  {
+    "_id": "6a1567154aae99e4cdda6fa1",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a1283f3309917e5f2ed7cb8",
+    "items": [
+      {
+        "product_id": "6a15513ba2e3657e624375ad",
+        "quantity": 1,
+        "price": 1000.0
+      }
+    ],
+    "delivery_address": "bongao, town",
+    "buyer_contact": "9897657544",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "payment_method": "GCash",
+    "subtotal": 1000.0,
+    "delivery_fee": 0.0,
+    "total_price": 1000.0,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-26 09:25:41.523000"
+  },
+  {
+    "_id": "6a1567cf4aae99e4cdda6fa3",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a1283f3309917e5f2ed7cb8",
+    "items": [
+      {
+        "product_id": "6a15513ba2e3657e624375ad",
+        "quantity": 1,
+        "price": 1000.0
+      }
+    ],
+    "delivery_address": "sfaf",
+    "buyer_contact": "0998776697",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "payment_method": "GCash",
+    "subtotal": 1000.0,
+    "delivery_fee": 0.0,
+    "total_price": 1000.0,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-26 09:28:47.569000"
+  },
+  {
+    "_id": "6a1567df4aae99e4cdda6fa5",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a1283f3309917e5f2ed7cb8",
+    "items": [
+      {
+        "product_id": "6a15513ba2e3657e624375ad",
+        "quantity": 1,
+        "price": 1000.0
+      }
+    ],
+    "delivery_address": "sfaf",
+    "buyer_contact": "0998776697",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "payment_method": "GCash",
+    "subtotal": 1000.0,
+    "delivery_fee": 0.0,
+    "total_price": 1000.0,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-26 09:29:03.037000"
+  },
+  {
+    "_id": "6a1569c54aae99e4cdda6fa7",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a1283f3309917e5f2ed7cb8",
+    "items": [
+      {
+        "product_id": "6a15513ba2e3657e624375ad",
+        "quantity": 1,
+        "price": 1000.0
+      }
+    ],
+    "delivery_address": "wetwet",
+    "buyer_contact": "3464643",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "payment_method": "GCash",
+    "subtotal": 1000.0,
+    "delivery_fee": 0.0,
+    "total_price": 1000.0,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-26 09:37:09.682000"
+  },
+  {
+    "_id": "6a156bee4aae99e4cdda6fa9",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a1283f3309917e5f2ed7cb8",
+    "items": [
+      {
+        "product_id": "6a15513ba2e3657e624375ad",
+        "quantity": 1,
+        "price": 1000.0
+      }
+    ],
+    "delivery_address": "BONGAO",
+    "buyer_contact": "098765321",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "payment_method": "GCash",
+    "subtotal": 1000.0,
+    "delivery_fee": 0.0,
+    "total_price": 1000.0,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-26 09:46:22.398000"
+  },
+  {
+    "_id": "6a156c69aeb7f0cd02f7dafc",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a1283f3309917e5f2ed7cb8",
+    "items": [
+      {
+        "product_id": "6a15513ba2e3657e624375ad",
+        "quantity": 1,
+        "price": 1000.0
+      }
+    ],
+    "delivery_address": "bongao",
+    "buyer_contact": "1234567890",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "payment_method": "GCash",
+    "subtotal": 1000.0,
+    "delivery_fee": 0.0,
+    "total_price": 1000.0,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-26 09:48:25.254000"
+  },
+  {
+    "_id": "6a156c8caeb7f0cd02f7dafe",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a1283f3309917e5f2ed7cb8",
+    "items": [
+      {
+        "product_id": "6a15513ba2e3657e624375ad",
+        "quantity": 1,
+        "price": 1000.0
+      }
+    ],
+    "delivery_address": "bongao",
+    "buyer_contact": "1234567890",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "payment_method": "GCash",
+    "subtotal": 1000.0,
+    "delivery_fee": 0.0,
+    "total_price": 1000.0,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-26 09:49:00.428000"
+  },
+  {
+    "_id": "6a156c93aeb7f0cd02f7db00",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a1283f3309917e5f2ed7cb8",
+    "items": [
+      {
+        "product_id": "6a15513ba2e3657e624375ad",
+        "quantity": 1,
+        "price": 1000.0
+      }
+    ],
+    "delivery_address": "bongao",
+    "buyer_contact": "1234567890",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "payment_method": "GCash",
+    "subtotal": 1000.0,
+    "delivery_fee": 0.0,
+    "total_price": 1000.0,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-26 09:49:07.046000"
+  },
+  {
+    "_id": "6a156c99aeb7f0cd02f7db02",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a1283f3309917e5f2ed7cb8",
+    "items": [
+      {
+        "product_id": "6a15513ba2e3657e624375ad",
+        "quantity": 1,
+        "price": 1000.0
+      }
+    ],
+    "delivery_address": "bongao",
+    "buyer_contact": "1234567890",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "payment_method": "GCash",
+    "subtotal": 1000.0,
+    "delivery_fee": 0.0,
+    "total_price": 1000.0,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-26 09:49:13.575000"
+  },
+  {
+    "_id": "6a156e9bc6043d6dfa618607",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a1283f3309917e5f2ed7cb8",
+    "items": [
+      {
+        "product_id": "6a15513ba2e3657e624375ad",
+        "quantity": 1,
+        "price": 1000.0
+      }
+    ],
+    "delivery_address": "bongao",
+    "buyer_contact": "877885858",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "payment_method": "GCash",
+    "subtotal": 1000.0,
+    "delivery_fee": 0.0,
+    "total_price": 1000.0,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-26 09:57:47.448000",
+    "paymentStatus": "pending"
+  },
+  {
+    "_id": "6a156ec1c6043d6dfa618609",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a1283f3309917e5f2ed7cb8",
+    "items": [
+      {
+        "product_id": "6a15513ba2e3657e624375ad",
+        "quantity": 1,
+        "price": 1000.0
+      }
+    ],
+    "delivery_address": "bongao",
+    "buyer_contact": "877885858",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "payment_method": "GCash",
+    "subtotal": 1000.0,
+    "delivery_fee": 0.0,
+    "total_price": 1000.0,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-26 09:58:25.918000",
+    "paymentStatus": "pending"
+  },
+  {
+    "_id": "6a1577edbdd223c38c8d61c7",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a1283f3309917e5f2ed7cb8",
+    "items": [
+      {
+        "product_id": "6a15513ba2e3657e624375ad",
+        "quantity": 1,
+        "price": 1000.0
+      },
+      {
+        "product_id": "6a157660bdd223c38c8d61c6",
+        "quantity": 1,
+        "price": 85.0
+      }
+    ],
+    "delivery_address": "bridge",
+    "buyer_contact": "8888888888",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "payment_method": "GCash",
+    "subtotal": 1085.0,
+    "delivery_fee": 0.0,
+    "total_price": 1085.0,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-26 10:37:33.509000",
+    "paymentStatus": "pending"
+  },
+  {
+    "_id": "6a15783cbdd223c38c8d61c9",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a1575e0bdd223c38c8d61c5",
+    "items": [
+      {
+        "product_id": "6a157660bdd223c38c8d61c6",
+        "quantity": 1,
+        "price": 85.0
+      }
+    ],
+    "delivery_address": "bridge",
+    "buyer_contact": "88888888888",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "payment_method": "GCash",
+    "subtotal": 85.0,
+    "delivery_fee": 0.0,
+    "total_price": 85.0,
+    "status": "Processing",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-26 10:38:52.806000",
+    "paymentStatus": "paid"
+  },
+  {
+    "_id": "6a157cfcbdd223c38c8d61cb",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a1575e0bdd223c38c8d61c5",
+    "items": [
+      {
+        "product_id": "6a157660bdd223c38c8d61c6",
+        "quantity": 1,
+        "price": 85.0
+      }
+    ],
+    "delivery_address": "bongao",
+    "buyer_contact": "7777777777",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "payment_method": "GCash",
+    "subtotal": 85.0,
+    "delivery_fee": 0.0,
+    "total_price": 85.0,
+    "status": "delivered",
+    "payment_status": "paid",
+    "created_at": "2026-05-26 10:59:08.792000",
+    "paymentStatus": "paid",
+    "delivery_status": "delivered",
+    "buyer_removed": true
+  },
+  {
+    "_id": "6a15a8da6e683f06f1016ed5",
+    "buyer_id": "6a1283f3309917e5f2ed7cb8",
+    "seller_id": "6a0dee786815ad396e53ab7e",
+    "items": [
+      {
+        "product_id": "6a1018f09c47d808d3a3b2e1",
+        "quantity": 1,
+        "price": 150.0
+      }
+    ],
+    "delivery_address": "town",
+    "buyer_contact": "999999990",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "payment_method": "GCash",
+    "subtotal": 150.0,
+    "delivery_fee": 0.0,
+    "total_price": 150.0,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-26 14:06:18.243000"
+  },
+  {
+    "_id": "6a15a8e16e683f06f1016ed7",
+    "buyer_id": "6a1283f3309917e5f2ed7cb8",
+    "seller_id": "6a0dee786815ad396e53ab7e",
+    "items": [
+      {
+        "product_id": "6a1018f09c47d808d3a3b2e1",
+        "quantity": 1,
+        "price": 150.0
+      }
+    ],
+    "delivery_address": "town",
+    "buyer_contact": "999999990",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "payment_method": "GCash",
+    "subtotal": 150.0,
+    "delivery_fee": 0.0,
+    "total_price": 150.0,
+    "status": "shipped",
+    "payment_status": "paid",
+    "created_at": "2026-05-26 14:06:25.761000",
+    "delivery_status": "assigned",
+    "rider_id": "6a1283f3309917e5f2ed7cb8"
+  },
+  {
+    "_id": "6a17a58c301e6f9312371bf9",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a1283f3309917e5f2ed7cb8",
+    "items": [
+      {
+        "product_id": "6a15513ba2e3657e624375ad",
+        "quantity": 1,
+        "price": 1000.0
+      }
+    ],
+    "delivery_address": "bridge",
+    "buyer_contact": "888888888888",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "payment_method": "GCash",
+    "subtotal": 1000.0,
+    "delivery_fee": 0.0,
+    "total_price": 1000.0,
+    "status": "Processing",
+    "payment_status": "unpaid",
+    "created_at": "2026-05-28 02:16:44.646000",
+    "paymentStatus": "paid"
+  },
+  {
+    "_id": "6a1866832eacf4ec04e0b2b5",
+    "buyer_id": "6a11b1b58f60a1158c5b9a23",
+    "seller_id": "6a0dee786815ad396e53ab7e",
+    "items": [
+      {
+        "product_id": "6a11cb1c84a11860c82df1ae",
+        "quantity": 1,
+        "price": 45.0
+      }
+    ],
+    "delivery_address": "bongao",
+    "buyer_contact": "8888888888",
+    "buyer_lat": null,
+    "buyer_lng": null,
+    "payment_method": "GCash",
+    "subtotal": 45.0,
+    "delivery_fee": 0.0,
+    "total_price": 45.0,
+    "status": "delivered",
+    "payment_status": "paid",
+    "created_at": "2026-05-28 16:00:03.199000",
+    "paymentStatus": "paid",
+    "delivery_status": "delivered",
+    "rider_id": "6a107f927b01bf9fa4e2c315"
+  }
+]

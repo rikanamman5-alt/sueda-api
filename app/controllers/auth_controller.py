@@ -1,6 +1,8 @@
+import json
 import urllib.parse
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, Request
+from starlette.responses import HTMLResponse
 from services.oauth_service import oauth
 from models.user_model import UserModel
 from utils.jwt import create_access_token, create_refresh_token
@@ -14,7 +16,7 @@ async def login_google(request: Request):
     return await oauth.google.authorize_redirect(request, GOOGLE_REDIRECT_URI)
 
 
-@router.get("/auth/google")
+@router.get("/auth/google", response_class=HTMLResponse)
 async def auth_google(request: Request):
     token = await oauth.google.authorize_access_token(request)
     user_info = token.get("userinfo")
@@ -31,7 +33,7 @@ async def auth_google(request: Request):
             "provider": "google",
             "role": "buyer",
             "is_verified": True,
-            "last_login": datetime.utcnow(),
+            "last_login": datetime.now(timezone.utc),
         }
         result = await UserModel.create_user(new_user)
         user_id = str(result.inserted_id)
@@ -53,7 +55,7 @@ async def auth_google(request: Request):
         "role": role,
     })
 
-    return {
+    data = {
         "user": {
             "email": email,
             "name": user_info.get("name"),
@@ -64,6 +66,27 @@ async def auth_google(request: Request):
         "refresh_token": refresh_token,
         "token_type": "bearer",
     }
+
+    data_json = json.dumps(data)
+    html = f"""<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Signing in...</title></head>
+<body>
+<script>
+(function() {{
+    var data = {data_json};
+    data.type = 'google-oauth';
+    if (window.opener) {{
+        window.opener.postMessage(data, '*');
+        window.close();
+    }} else {{
+        document.body.textContent = JSON.stringify(data, null, 2);
+    }}
+}})();
+</script>
+</body>
+</html>"""
+    return HTMLResponse(content=html)
 
 
 @router.get("/auth/url")

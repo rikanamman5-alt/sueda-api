@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException, Depends, Query
 from pydantic import BaseModel
 from utils.deps import require_role
@@ -508,7 +508,7 @@ async def admin_analytics(admin=Depends(require_role(["admin"]))):
     from datetime import datetime, timedelta
     import calendar
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     monthly_data = []
     for i in range(6):
         month = now.month - i

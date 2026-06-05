@@ -1,12 +1,18 @@
-# Backend
-backend/.env
-backend/uploads/
-backend/__pycache__/
-backend/**/__pycache__/
-backend/*.pyc
-backend/.pytest_cache/
+# Environment (contains secrets - DO NOT COMMIT)
+.env
+.env.local
 
-# Frontend (not included in this repo)
+# Python
+__pycache__/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+
+# Uploads
+uploads/
+static/uploads/
+
+# Frontend (separate Flutter project)
 frontend/
 
 # IDE

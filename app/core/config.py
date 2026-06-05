@@ -28,9 +28,8 @@ CLOUDINARY_API_KEY = os.getenv("CLOUDINARY_API_KEY", "")
 CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET", "")
 
 # --- EMAIL / SMTP SETTINGS ---
-# --- SMTP / EMAIL ---
-SMTP_HOST = "smtp.gmail.com"
-SMTP_PORT = 587
-SMTP_USER = "sueda.app.test@gmail.com"
-SMTP_PASS = "your-app-password-here"
-SMTP_FROM = "sueda.app.test@gmail.com"
+SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
+SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
+SMTP_USER = os.getenv("SMTP_USER", "")
+SMTP_PASS = os.getenv("SMTP_PASS", "")
+SMTP_FROM = os.getenv("SMTP_FROM", "")

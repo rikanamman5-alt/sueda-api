@@ -1,0 +1,27 @@
+[
+  {
+    "_id": "6a11bb3dd6728ee055e61979",
+    "user_id": "sidz@gmail.com",
+    "items": [
+      {
+        "product_id": "6a11a8ee6069b22d29a7a2fb",
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "_id": "6a12dfd75505d5bda8ae8d2d",
+    "user_id": "ammanrikz4@gmail.com",
+    "items": []
+  },
+  {
+    "_id": "6a19eaed2d0789c921259dd9",
+    "user_id": "mark@gmail.com",
+    "items": [
+      {
+        "product_id": "6a128bd4e5cb1272808d55bd",
+        "quantity": 1
+      }
+    ]
+  }
+]

@@ -14,4 +14,5 @@ python-multipart>=0.0.9
 aiofiles>=24.1.0
 itsdangerous>=2.2.0
 Pillow>=10.0.0
-cloudinary>=1.40.0
+# cloudinary>=1.40.0 # Optional: uncomment if using Cloudinary image storage
+certifi>=2024.8.30

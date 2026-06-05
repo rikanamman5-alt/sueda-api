@@ -4,7 +4,7 @@ import io
 from typing import List, Optional
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from PIL import Image
-from app.core.config import CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
+from core.config import CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
 
 try:
     import cloudinary
@@ -149,7 +149,7 @@ async def upload_product_images(
             file_path = os.path.join(PRODUCT_UPLOAD_DIR, unique_filename)
             with open(file_path, "wb") as f:
                 f.write(content)
-            uploaded_files.append(unique_filename)
+            uploaded_files.append(f"/uploads/products/{unique_filename}")
 
     return {
         "message": "Images uploaded successfully",

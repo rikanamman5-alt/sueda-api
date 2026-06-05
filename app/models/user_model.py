@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from database.collections import users_collection
 
 
@@ -28,7 +28,7 @@ class UserModel:
     async def update_last_login(email: str):
         return await users_collection.update_one(
             {"email": email},
-            {"$set": {"last_login": datetime.utcnow()}}
+            {"$set": {"last_login": datetime.now(timezone.utc)}}
         )
 
     @staticmethod

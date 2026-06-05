@@ -1,0 +1,148 @@
+[
+  {
+    "_id": "6a0dcdd6f14488338e3d409c",
+    "email": "admin@sueda.com",
+    "password_hash": "$2b$12$ewExFHy1KzS1F/tKU2tyau4AO82whnxacyxHAzwz39VXv9Ksmg3NG",
+    "name": "Admin",
+    "provider": "email",
+    "role": "admin",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNmEwZGNkZDZmMTQ0ODgzMzhlM2Q0MDljIiwiZW1haWwiOiJhZG1pbkBzdWVkYS5jb20iLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3ODI2ODE2NjAsInR5cGUiOiJyZWZyZXNoIn0.JslWH1EHNrRyywv4blHbVetn9eXugUxz1S-_mE7ufDc"
+  },
+  {
+    "_id": "6a0dee786815ad396e53ab7e",
+    "email": "ben@gmail.com",
+    "name": "ben",
+    "password_hash": "$2b$12$2DyXIWALDCV4zQFVBHSusefvhMVn8Eh0GLgyxo2fifcvP0c.5CijK",
+    "provider": "email",
+    "role": "seller",
+    "address": "lumbuy",
+    "contact_number": "0987654321",
+    "shop_description": "for basic needs",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNmEwZGVlNzg2ODE1YWQzOTZlNTNhYjdlIiwiZW1haWwiOiJiZW5AZ21haWwuY29tIiwicm9sZSI6InNlbGxlciIsImV4cCI6MTc4MjY3NzYyNywidHlwZSI6InJlZnJlc2gifQ.wj0DyiuEydqJd9RW7BaOei1CUp8zgHaJSnhsX-sS210",
+    "avatar": "79e08a81-d442-4d9b-81e8-8dfc13650f0c.jpg",
+    "shop_name": "mini store",
+    "card_expiry": "",
+    "card_holder_name": "",
+    "card_number": "",
+    "gcash_name": "ben",
+    "gcash_number": "99999999999",
+    "business_permit": "try-564354",
+    "operating_hours": "8am - 9 pm",
+    "verification_reject_reason": "",
+    "verification_status": "pending",
+    "notifications": [
+      {
+        "id": "welcome",
+        "title": "Welcome to SUEDA",
+        "message": "Track orders, save favorites, and check promos here.",
+        "time": "Today",
+        "read": true
+      },
+      {
+        "id": "promo_flash_sale",
+        "title": "Flash Sale",
+        "message": "Tap Flash Sale on the home page to browse sale picks.",
+        "time": "Today",
+        "read": false
+      }
+    ]
+  },
+  {
+    "_id": "6a107f927b01bf9fa4e2c315",
+    "email": "mark@gmail.com",
+    "name": "mark",
+    "password_hash": "$2b$12$bDVJ6dO61d2ldaOkDKY1LuGK3axGs5P7yZ0Syo44CCYfHD6XqTuA.",
+    "provider": "email",
+    "role": "rider",
+    "seller_id": "6a0dee786815ad396e53ab7e",
+    "address": "welcome",
+    "contact_number": "0987766554321",
+    "location": null,
+    "is_available": true,
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNmExMDdmOTI3YjAxYmY5ZmE0ZTJjMzE1IiwiZW1haWwiOiJtYXJrQGdtYWlsLmNvbSIsInJvbGUiOiJyaWRlciIsImV4cCI6MTc4MjY4MTczNCwidHlwZSI6InJlZnJlc2gifQ.mu2jhqnpaZRlgMzVMlIJBK9KGE0fMSwsfRaWmw4N-6g",
+    "banned": false,
+    "current_order_id": null,
+    "rider_status": "available",
+    "vehicle_brand": "honda",
+    "vehicle_color": "Red",
+    "vehicle_model": "Click 125i",
+    "vehicle_plate": "ABC1231",
+    "verification_reject_reason": "",
+    "verification_status": "verified",
+    "avatar": "45d92a95-582d-48e7-8290-03d3cd4fd772.jpg"
+  },
+  {
+    "_id": "6a11b1b58f60a1158c5b9a23",
+    "email": "sidz@gmail.com",
+    "name": "sidz",
+    "password_hash": "$2b$12$sNVdLDqXEHq7ou6nZqn7kueDnk42/r4ExGQXxAgeF/i2IrDKGFohK",
+    "provider": "email",
+    "role": "buyer",
+    "address": "bato-bato",
+    "contact_number": "0987654321",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNmExMWIxYjU4ZjYwYTExNThjNWI5YTIzIiwiZW1haWwiOiJzaWR6QGdtYWlsLmNvbSIsInJvbGUiOiJidXllciIsImV4cCI6MTc4MjY2OTMyOSwidHlwZSI6InJlZnJlc2gifQ.a70PS5-bJaHkZy6eqQcl7p7Y6axuvjEEy9nKDIL30ks",
+    "avatar": "09aef24a-0b02-43f4-9741-f9a1c7f80734.jpg",
+    "wishlist": [
+      "6a157660bdd223c38c8d61c6"
+    ],
+    "notifications": [
+      {
+        "id": "welcome",
+        "title": "Welcome to SUEDA",
+        "message": "Track orders, save favorites, and check promos here.",
+        "time": "Today",
+        "read": true
+      },
+      {
+        "id": "promo_flash_sale",
+        "title": "Flash Sale",
+        "message": "Tap Flash Sale on the home page to browse sale picks.",
+        "time": "Today",
+        "read": true
+      }
+    ],
+    "banned": false
+  },
+  {
+    "_id": "6a1283f3309917e5f2ed7cb8",
+    "email": "ammanrikz4@gmail.com",
+    "name": "Eric Amman",
+    "picture": "https://lh3.googleusercontent.com/a/ACg8ocJ73gPETH_tv-9jaIY8ghKqp3H7KnWq9p7Yq1MX8PoSL-0KoF9I=s96-c",
+    "provider": "google",
+    "role": "seller",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNmExMjgzZjMzMDk5MTdlNWYyZWQ3Y2I4IiwiZW1haWwiOiJhbW1hbnJpa3o0QGdtYWlsLmNvbSIsInJvbGUiOiJzZWxsZXIiLCJleHAiOjE3ODI2NzUzNjUsInR5cGUiOiJyZWZyZXNoIn0.DdGfg25lAV_uXG9luhprN7gBfhDmXbrTgdMQeoOYv0M",
+    "avatar": "9d6c592e-af7f-43d7-8df9-9470658d1a79.jpg",
+    "shop_description": "Sueda",
+    "shop_name": "RS",
+    "gcash_number": "09511124704",
+    "current_order_id": "6a15a8e16e683f06f1016ed7",
+    "is_available": false,
+    "rider_status": "assigned",
+    "business_permit": "trr-68723",
+    "card_expiry": "",
+    "card_holder_name": "",
+    "card_number": "",
+    "gcash_name": "",
+    "operating_hours": "8:00 am-9:00pm",
+    "verification_reject_reason": "",
+    "verification_status": "verified"
+  },
+  {
+    "_id": "6a1575e0bdd223c38c8d61c5",
+    "email": "macabentabensoud0@gmail.com",
+    "name": "Bensoud Macabenta",
+    "picture": "https://lh3.googleusercontent.com/a/ACg8ocIh4m04q2sWkXR-vKalkfIfNrD3RWT2gz6WP5_CKwUhKsa1cA=s96-c",
+    "provider": "google",
+    "role": "seller",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNmExNTc1ZTBiZGQyMjNjMzhjOGQ2MWM1IiwiZW1haWwiOiJtYWNhYmVudGFiZW5zb3VkMEBnbWFpbC5jb20iLCJyb2xlIjoic2VsbGVyIiwiZXhwIjoxNzgyMzg1NTc0LCJ0eXBlIjoicmVmcmVzaCJ9.2eFwXZ_vH8sy1MfYiHrovmAi0Cw4atduQLix5ox0IK8",
+    "card_expiry": "",
+    "card_holder_name": "",
+    "card_number": "009988006677556",
+    "gcash_name": "Ben",
+    "gcash_number": "009988776655",
+    "shop_description": "jshdifugadisfgidbfu",
+    "shop_name": "Shanell Store",
+    "avatar": "f76ff8a3-8659-4a8b-b76f-a0af49dfc98e.jpg",
+    "banned": false
+  }
+]

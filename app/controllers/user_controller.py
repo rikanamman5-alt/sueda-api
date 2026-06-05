@@ -7,7 +7,7 @@ from schemas.user_schema import UserCreate, UserUpdate
 from utils.deps import get_current_user
 from utils.jwt import create_access_token, create_refresh_token, hash_password, verify_password
 from utils.mongo_helpers import fix_mongo
-from datetime import datetime
+from datetime import datetime, timezone
 from database.collections import users_collection
 
 router = APIRouter(tags=["9. Users"])
@@ -445,7 +445,7 @@ async def submit_support_ticket(
         "email": email,
         "subject": data.get("subject", ""),
         "message": data.get("message", ""),
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.now(timezone.utc),
         "status": "open",
     }
     await users_collection.update_one(

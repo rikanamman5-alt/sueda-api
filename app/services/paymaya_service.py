@@ -1,17 +1,20 @@
 import hashlib
 import hmac
 import json
+import os
 
-import requests
+import httpx
 from core.config import PAYMAYA_SECRET
 
-BASE_URL = "https://pg-sandbox.paymaya.com/checkout/v1"
+SANDBOX_URL = "https://pg-sandbox.paymaya.com/checkout/v1"
+PRODUCTION_URL = "https://pg.paymaya.com/checkout/v1"
+BASE_URL = PRODUCTION_URL if os.getenv("PAYMAYA_ENV", "sandbox") == "production" else SANDBOX_URL
 
 
 class PayMayaService:
 
     @staticmethod
-    def create_checkout(order_id: str, amount: float, items: list[dict] = None, redirect_base: str = None):
+    async def create_checkout(order_id: str, amount: float, items: list[dict] = None, redirect_base: str = None):
         if redirect_base is None:
             redirect_base = "http://localhost:8000"
 
@@ -42,11 +45,12 @@ class PayMayaService:
             }
         }
 
-        response = requests.post(
-            f"{BASE_URL}/checkout",
-            json=payload,
-            auth=(PAYMAYA_SECRET, "")
-        )
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{BASE_URL}/checkout",
+                json=payload,
+                auth=(PAYMAYA_SECRET, "")
+            )
 
         return response.json()
 

@@ -1,0 +1,56 @@
+[
+  {
+    "_id": "6a1018f09c47d808d3a3b2e1",
+    "name": "tumbler",
+    "description": "aquaflash",
+    "price": 150.0,
+    "stock": 15,
+    "category": "new version",
+    "images": [
+      "http://localhost:8000/uploads/products/87750598-64fe-46a7-8879-951c88c3f189.jpg",
+      "http://localhost:8000/uploads/products/eefa9d8b-1b1b-4785-b1c4-0b906d7b1253.jpg",
+      "http://localhost:8000/uploads/products/8de24145-6d78-40b5-abfc-bac790edee53.jpg"
+    ],
+    "seller_id": "6a0dee786815ad396e53ab7e",
+    "created_at": "2026-05-22 08:50:56.019000"
+  },
+  {
+    "_id": "6a1080237b01bf9fa4e2c316",
+    "name": "sardines",
+    "description": "kulapo",
+    "price": 23.0,
+    "stock": 50,
+    "category": "A",
+    "images": [
+      "http://localhost:8000/uploads/products/a3ae7a9b-1817-4583-be2c-3eaa2f917caf.jpg"
+    ],
+    "seller_id": "6a0dee786815ad396e53ab7e",
+    "created_at": "2026-05-22 16:11:15.057000"
+  },
+  {
+    "_id": "6a11b1068f60a1158c5b9a22",
+    "name": "bigas",
+    "description": "AAA",
+    "price": 1200.0,
+    "stock": 20,
+    "category": "Food",
+    "images": [
+      "http://127.0.0.1:8000/uploads/products/64cecb90-4acf-4030-ac7b-3b2c65bea8e9.jpg"
+    ],
+    "seller_id": "6a0dee786815ad396e53ab7e",
+    "created_at": "2026-05-23 13:52:06.561000"
+  },
+  {
+    "_id": "6a128bd4e5cb1272808d55bd",
+    "name": "shrime",
+    "description": "fresh shrime",
+    "price": 80.0,
+    "stock": 1,
+    "category": "Food",
+    "images": [
+      "http://127.0.0.1:8000/uploads/products/2fde0000-352d-4797-b96f-c8366a808f82.jpg"
+    ],
+    "seller_id": "6a1283f3309917e5f2ed7cb8",
+    "created_at": "2026-05-24 05:25:40.449000"
+  }
+]

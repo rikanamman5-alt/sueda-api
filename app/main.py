@@ -7,32 +7,26 @@ sys.path.append(os.path.join(BASE, "app"))
 
 import os
 import jwt
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, Query
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, Query, HTTPException
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.staticfiles import StaticFiles
-from app.core.config import BASE_DIR, SECRET_KEY, ALGORITHM
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
-from app.controllers import (
+from core.config import BASE_DIR, SECRET_KEY, ALGORITHM
+from controllers import (
     auth_controller, user_controller, order_controller, payment_controller,
     product_controller, delivery_controller, cart_controller, seller_controller,
     rider_controller, upload_controller, admin_controller, rating_controller,
     delivery_fee_controller,
 )
-from app.routes import auth as auth_routes, upload as upload_routes
-from app.database.mongo import db
-from app.core.config import MONGO_URI, DB_NAME, CORS_ORIGINS, ADMIN_EMAIL, ADMIN_PASSWORD
-from app.utils.jwt import hash_password
-from app.services.websocket_manager import ws_manager
+from routes import auth as auth_routes, upload as upload_routes
+from database.mongo import db
+from core.config import MONGO_URI, DB_NAME, CORS_ORIGINS, ADMIN_EMAIL, ADMIN_PASSWORD
+from utils.jwt import hash_password
+from services.websocket_manager import ws_manager
 
-limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(title="Sueda API", version="1.0.0")
-app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
 @app.get("/")
@@ -65,6 +59,8 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
+    if isinstance(exc, HTTPException):
+        raise exc
     return JSONResponse(
         status_code=500,
         content={"detail": "Internal server error", "message": str(exc)},
