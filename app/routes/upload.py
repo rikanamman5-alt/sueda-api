@@ -5,6 +5,7 @@ from typing import List, Optional
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from PIL import Image
 from core.config import CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
+from database.collections import product_images_collection
 
 try:
     import cloudinary
@@ -138,18 +139,17 @@ async def upload_product_images(
             )
 
         content = _compress_image(content)
-        ext = ".jpg"
-        unique_filename = f"{uuid.uuid4()}{ext}"
 
-        cloud_url = _upload_to_cloudinary(content, unique_filename.replace(".jpg", ""))
+        cloud_url = _upload_to_cloudinary(content, str(uuid.uuid4()))
         if cloud_url:
             uploaded_files.append(cloud_url)
         else:
-            os.makedirs(PRODUCT_UPLOAD_DIR, exist_ok=True)
-            file_path = os.path.join(PRODUCT_UPLOAD_DIR, unique_filename)
-            with open(file_path, "wb") as f:
-                f.write(content)
-            uploaded_files.append(f"/uploads/products/{unique_filename}")
+            result = await product_images_collection.insert_one({
+                "data": content,
+                "content_type": "image/jpeg",
+            })
+            image_id = str(result.inserted_id)
+            uploaded_files.append(f"/images/{image_id}")
 
     return {
         "message": "Images uploaded successfully",

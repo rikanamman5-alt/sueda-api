@@ -18,7 +18,7 @@ from controllers import (
     auth_controller, user_controller, order_controller, payment_controller,
     product_controller, delivery_controller, cart_controller, seller_controller,
     rider_controller, upload_controller, admin_controller, rating_controller,
-    delivery_fee_controller,
+    delivery_fee_controller, image_controller,
 )
 from routes import auth as auth_routes, upload as upload_routes
 from database.mongo import db
@@ -161,6 +161,7 @@ app.include_router(upload_routes.router)
 app.include_router(admin_controller.router)
 app.include_router(rating_controller.router)
 app.include_router(delivery_fee_controller.router)
+app.include_router(image_controller.router)
 
 static_dir = os.path.join(BASE_DIR, "static")
 os.makedirs(os.path.join(static_dir, "uploads"), exist_ok=True)
